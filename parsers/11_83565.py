@@ -16,9 +16,11 @@ HEADER_SIRA_RE = re.compile(r"^Sira$", re.IGNORECASE)
 HEADER_YB_RE = re.compile(r"^YB$", re.IGNORECASE)
 HEADER_ZAMAN_RE = re.compile(r"^Zaman\s+\w+$", re.IGNORECASE)
 RANK_RE = re.compile(r"^(\d{1,3})\s*\.?\s*$")
+INLINE_RANK_RE = re.compile(r"^(\d{1,3})\.\s+(.+)$")
 YEAR_RE = re.compile(r"^\d{2}$")
 # Time pattern that also works when OCR glues text and time together (e.g. Ortaoku28.45)
 TIME_RE = re.compile(r"(?<!\d)\d{1,2}[:.]\d{2}(?:[:.]\d{2})?(?!\d)")
+PURE_TIME_RE = re.compile(r"^\d{1,2}[:\-\.]\d{2}(?:[:\-\.]\d{2})?$")
 POINTS_RE = re.compile(r"^\d{1,4}$")
 REGISTERED_RE = re.compile(r"^Registered\b", re.IGNORECASE)
 SAYFA_RE = re.compile(r"^Sayfa\b", re.IGNORECASE)
@@ -119,13 +121,29 @@ def _parse_event_components(details_line: str | None, phase_line: str | None) ->
     level = phase_line
 
     if details_line:
-        parts = [part.strip() for part in details_line.split(";") if part.strip()]
-        if parts:
-            category = parts[0]
-        if len(parts) >= 2:
-            distance_style = parts[1]
-        if len(parts) >= 3 and not level:
-            level = parts[2]
+        if ";" in details_line:
+            parts = [part.strip() for part in details_line.split(";") if part.strip()]
+            if parts:
+                category = parts[0]
+            if len(parts) >= 2:
+                distance_style = parts[1]
+            if len(parts) >= 3 and not level:
+                level = parts[2]
+            if distance_style and not level and "," in distance_style:
+                subparts = [part.strip() for part in distance_style.split(",") if part.strip()]
+                if len(subparts) >= 2 and subparts[-1].lower() in {"açık", "acik", "final", "seri"}:
+                    distance_style = subparts[0]
+                    level = subparts[-1]
+        elif "," in details_line:
+            parts = [part.strip() for part in details_line.split(",") if part.strip()]
+            if parts:
+                category = parts[0]
+            if len(parts) >= 2:
+                distance_style = parts[1]
+            if len(parts) >= 3 and not level:
+                level = parts[2]
+        else:
+            distance_style = details_line
 
     return {
         "category": _normalize_ocr_text(category),
@@ -213,6 +231,71 @@ def _extract_time_parts(candidate: str) -> tuple[str | None, str, str]:
         return f"{compact_match.group(1)}.{compact_match.group(2)}", "", ""
 
     return None, "", ""
+
+
+def _normalize_time_token(raw: str) -> str:
+    token = raw.strip().replace(",", ".").replace("-", ":")
+    chunks = re.findall(r"\d+", token)
+    if len(chunks) >= 3:
+        return f"{int(chunks[0])}:{chunks[1].zfill(2)}.{chunks[2].zfill(2)}"
+    if len(chunks) == 2:
+        return f"{int(chunks[0])}.{chunks[1].zfill(2)}"
+    return token
+
+
+def _parse_distance_m(event: dict[str, Any] | None) -> int | None:
+    if not event:
+        return None
+
+    distance_style = str(event.get("distance_style") or "")
+    event_name = str(event.get("event_name") or "")
+    source = f"{distance_style} {event_name}"
+
+    match = re.search(r"([0-9oO]{2,4})\s*[mM]", source)
+    if not match:
+        return None
+
+    token = match.group(1).replace("O", "0").replace("o", "0")
+    if not token.isdigit():
+        return None
+    return int(token)
+
+
+def _extract_total_time_and_points(candidate: str, prefer_long_time: bool) -> tuple[str | None, str | None, str]:
+    text = candidate.replace(",", ".").replace("-", ":")
+    pattern = r"\d{1,2}[:.]\d{2}[:.]\d{2}" if prefer_long_time else r"\d{1,2}[:.]\d{2}(?:[:.]\d{2})?"
+    match = re.search(pattern, text)
+    if not match:
+        return None, None, candidate
+
+    raw_time = match.group(0)
+    normalized_time = _normalize_time_token(raw_time)
+
+    left = text[: match.start()].strip()
+    right = text[match.end() :].strip()
+    points: str | None = None
+
+    right_groups = re.findall(r"\d{1,4}", right)
+    if right_groups:
+        points = right_groups[-1]
+        if len(points) == 4 and points.startswith("1"):
+            points = points[-3:]
+
+    # Remove extracted points digits and OCR punctuation from right part.
+    residual_right = right
+    if points:
+        residual_right = re.sub(r"\d{1,4}", " ", residual_right)
+        residual_right = re.sub(r"[\./:\-]", " ", residual_right)
+        residual_right = re.sub(r"\s+", " ", residual_right).strip()
+        if len(residual_right) <= 2:
+            residual_right = ""
+
+    cleaned_text = " ".join(part for part in [left, residual_right] if part).strip()
+    return normalized_time, points, cleaned_text
+
+
+def _is_split_time_line(candidate: str) -> bool:
+    return bool(PURE_TIME_RE.fullmatch(candidate.strip()))
 
 
 def _extract_metadata(lines: list[str]) -> tuple[dict[str, str | None], set[int], set[str]]:
@@ -533,7 +616,7 @@ def parse(text: str) -> dict[str, Any]:
 
             if line_no < total_lines:
                 next_line = lines[line_no]
-                if next_line and ";" in next_line:
+                if next_line and (";" in next_line or "," in next_line):
                     details_line = next_line
                     consumed = 2
 
@@ -563,17 +646,29 @@ def parse(text: str) -> dict[str, Any]:
             line_no += consumed
             continue
 
+        inline_candidate_for_name: str | None = None
         rank = _rank_from_line(line, _prev_non_empty(lines, line_no), _next_non_empty(lines, line_no))
+        if rank is None:
+            inline_rank_match = INLINE_RANK_RE.match(line)
+            if inline_rank_match:
+                rank = int(inline_rank_match.group(1))
+                inline_candidate_for_name = _clean_line(inline_rank_match.group(2))
+
         if rank is not None:
             record_line_start = line_no
             mark(line_no, "rank_line", extras={"rank": rank})
             line_no += 1
 
-            swimmer_name: str | None = None
+            swimmer_name: str | None = _clean_swimmer_name(inline_candidate_for_name)
             birth_year: str | None = None
             club_fragments: list[str] = []
             time_value: str | None = None
             points_value: str | None = None
+            split_times: list[str] = []
+
+            distance_m = _parse_distance_m(current_event)
+            expected_splits = distance_m // 50 if distance_m and distance_m >= 100 else 0
+            prefer_long_time = bool(distance_m and distance_m >= 100)
 
             while line_no <= total_lines:
                 candidate = lines[line_no - 1]
@@ -590,8 +685,12 @@ def parse(text: str) -> dict[str, Any]:
                 if DISK_MARKER_RE.match(candidate) or TD_MARKER_RE.match(candidate):
                     break
 
+                # Avoid swallowing next athlete rows written as "5. (Fd) ...".
+                if INLINE_RANK_RE.match(candidate) and (swimmer_name or time_value or club_fragments or split_times):
+                    break
+
                 next_rank = _rank_from_line(candidate, _prev_non_empty(lines, line_no), _next_non_empty(lines, line_no))
-                if next_rank is not None and (swimmer_name or time_value or club_fragments):
+                if next_rank is not None and (swimmer_name or time_value or club_fragments or split_times):
                     break
 
                 if swimmer_name is None and not YEAR_RE.fullmatch(candidate):
@@ -614,18 +713,24 @@ def parse(text: str) -> dict[str, Any]:
                     line_no += 1
                     continue
 
+                if _is_split_time_line(candidate) and expected_splits and len(split_times) < expected_splits:
+                    split_times.append(_normalize_time_token(candidate))
+                    mark(line_no, "split_time_line")
+                    line_no += 1
+                    continue
+
                 if time_value is None:
-                    extracted_time, left, right = _extract_time_parts(candidate)
-                    if extracted_time:
-                        time_value = extracted_time
-                        if left:
-                            club_fragments.append(left)
-                        if right and not POINTS_RE.fullmatch(right):
-                            club_fragments.append(right)
+                    total_time, extracted_points, cleaned_candidate = _extract_total_time_and_points(candidate, prefer_long_time)
+                    if total_time:
+                        time_value = total_time
+                        if cleaned_candidate:
+                            club_fragments.append(cleaned_candidate)
+                        if extracted_points and points_value is None:
+                            points_value = extracted_points
                         mark(line_no, "time_line")
                         line_no += 1
 
-                        if line_no <= total_lines:
+                        if line_no <= total_lines and points_value is None:
                             possible_points = lines[line_no - 1]
                             if POINTS_RE.fullmatch(possible_points):
                                 points_value = possible_points
@@ -633,7 +738,7 @@ def parse(text: str) -> dict[str, Any]:
                                 line_no += 1
                         continue
 
-                if points_value is None and time_value is not None and POINTS_RE.fullmatch(candidate):
+                if points_value is None and (time_value is not None or split_times) and POINTS_RE.fullmatch(candidate):
                     points_value = candidate
                     mark(line_no, "points_line")
                     line_no += 1
@@ -652,7 +757,8 @@ def parse(text: str) -> dict[str, Any]:
                     "swimmer_name": _clean_swimmer_name(swimmer_name),
                     "birth_year": birth_year,
                     "club": _clean_club_name(" ".join(part for part in club_fragments if part).strip()),
-                    "time": time_value,
+                    "split_times": split_times,
+                    "time": _normalize_time_token(time_value) if time_value else None,
                     "points": points_value,
                     "line_start": record_line_start,
                     "line_end": line_no - 1,
