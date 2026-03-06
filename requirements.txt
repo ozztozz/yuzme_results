@@ -1,0 +1,9 @@
+# Core dependencies used by this project
+PyMuPDF
+easyocr
+numpy
+Pillow
+
+# Optional OCR backend (used with --ocr-backend paddleocr)
+# paddleocr
+# Install a compatible paddlepaddle build for your OS/Python version
