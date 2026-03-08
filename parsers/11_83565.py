@@ -29,6 +29,9 @@ TD_MARKER_RE = re.compile(r"^td\s*\.?$", re.IGNORECASE)
 SW_RULE_RE = re.compile(r"^SW\s*[0-9]+(?:\.[0-9]+)?$", re.IGNORECASE)
 ZAMAN_NOTE_RE = re.compile(r"^\(Zaman:\s*([^)]+)\)$", re.IGNORECASE)
 STATUS_NOTE_RE = re.compile(r"^(DO|DQ)$", re.IGNORECASE)
+TD_INLINE_MARKER_RE = re.compile(r"^[lI1t]d\s*\.?$", re.IGNORECASE)
+TD_MARKER_PREFIX_RE = re.compile(r"^(?:[lI1t]d|d)\s*\.?\s*", re.IGNORECASE)
+TD_TAG_PREFIX_RE = re.compile(r"^\((?:Td|Fd)\s*[\)\}\]]\s*", re.IGNORECASE)
 
 OCR_TEXT_REPLACEMENTS: list[tuple[str, str]] = [
     (r"\bS[O0]m\b", "50m"),
@@ -261,6 +264,146 @@ def _parse_distance_m(event: dict[str, Any] | None) -> int | None:
     return int(token)
 
 
+def _strip_td_prefix(candidate: str) -> str:
+    text = candidate.strip()
+    text = TD_MARKER_PREFIX_RE.sub("", text)
+    text = TD_TAG_PREFIX_RE.sub("", text)
+    return text.strip()
+
+
+def _is_td_entry_start(candidate: str) -> bool:
+    line = candidate.strip()
+    if not line:
+        return False
+    if TD_INLINE_MARKER_RE.fullmatch(line):
+        return True
+    if re.search(r"\((?:Td|Fd)\s*[\)\}\]]", line, re.IGNORECASE):
+        return True
+    if re.match(r"^(?:[lI1t]d|d)\s*\.\s*\((?:Td|Fd)", line, re.IGNORECASE):
+        return True
+    return False
+
+
+def _split_td_entries(lines: list[tuple[int, str]]) -> list[list[tuple[int, str]]]:
+    entries: list[list[tuple[int, str]]] = []
+    current: list[tuple[int, str]] = []
+
+    for index, (line_no, raw_line) in enumerate(lines):
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        should_split = False
+        if current and _is_td_entry_start(line):
+            # A marker-like line starts a new td entry once previous entry has a time.
+            if any(TIME_RE.search(item_line) for _, item_line in current):
+                should_split = True
+
+        if should_split:
+            entries.append(current)
+            current = [(line_no, raw_line)]
+            continue
+
+        if not current and index > 0 and _is_td_entry_start(line):
+            current = [(line_no, raw_line)]
+            continue
+
+        current.append((line_no, raw_line))
+
+    if current:
+        entries.append(current)
+
+    return entries
+
+
+def _parse_td_entry(
+    entry_lines: list[tuple[int, str]],
+    event_no: str | None,
+    event_name: str | None,
+    page: int | None,
+    marker_text: str,
+) -> dict[str, Any]:
+    swimmer_name: str | None = None
+    birth_year: str | None = None
+    club_fragments: list[str] = []
+    split_times: list[str] = []
+    time_value: str | None = None
+    points_value: str | None = None
+    notes: list[str] = []
+
+    for line_no, raw_line in entry_lines:
+        candidate = _clean_line(raw_line)
+        if not candidate:
+            continue
+
+        cleaned = _strip_td_prefix(candidate)
+        if not cleaned:
+            notes.append(candidate)
+            continue
+
+        if swimmer_name is None:
+            if YEAR_RE.fullmatch(cleaned):
+                birth_year = cleaned
+                continue
+
+            year_match = re.fullmatch(r"(.+?)\s+(\d{2})", cleaned)
+            if year_match and not TIME_RE.search(cleaned):
+                swimmer_name = _clean_swimmer_name(year_match.group(1))
+                birth_year = year_match.group(2)
+                continue
+
+            swimmer_name = _clean_swimmer_name(cleaned)
+            continue
+
+        if birth_year is None and YEAR_RE.fullmatch(cleaned):
+            birth_year = cleaned
+            continue
+
+        if _is_split_time_line(cleaned):
+            split_times.append(_normalize_time_token(cleaned))
+            continue
+
+        if time_value is None:
+            total_time, extracted_points, cleaned_candidate = _extract_total_time_and_points(cleaned, True)
+            if total_time:
+                time_value = total_time
+                if extracted_points and points_value is None:
+                    points_value = extracted_points
+                if cleaned_candidate:
+                    club_fragments.append(cleaned_candidate)
+                continue
+
+        if points_value is None and POINTS_RE.fullmatch(cleaned):
+            points_value = cleaned
+            continue
+
+        club_fragments.append(cleaned)
+        notes.append(candidate)
+
+    start_line = entry_lines[0][0]
+    end_line = entry_lines[-1][0]
+
+    return {
+        "event_no": event_no,
+        "event_name": event_name,
+        "page": page,
+        "special_type": "td",
+        "status": None,
+        "swimmer_name": _clean_swimmer_name(swimmer_name),
+        "birth_year": birth_year,
+        "club": _clean_club_name(" ".join(part for part in club_fragments if part).strip()),
+        "split_times": split_times,
+        "time": _normalize_time_token(time_value) if time_value else None,
+        "points": points_value,
+        "rule": None,
+        "note_time": None,
+        "notes": notes,
+        "marker_text": marker_text,
+        "line_start": start_line,
+        "line_end": end_line,
+    }
+
+
 def _extract_total_time_and_points(candidate: str, prefer_long_time: bool) -> tuple[str | None, str | None, str]:
     text = candidate.replace(",", ".").replace("-", ":")
     pattern = r"\d{1,2}[:.]\d{2}[:.]\d{2}" if prefer_long_time else r"\d{1,2}[:.]\d{2}(?:[:.]\d{2})?"
@@ -469,6 +612,36 @@ def parse(text: str) -> dict[str, Any]:
             special_start = line_no
             mark(line_no, "special_marker", extras={"special_type": special_type})
             line_no += 1
+
+            if special_type == "td":
+                td_lines: list[tuple[int, str]] = []
+                while line_no <= total_lines:
+                    candidate = lines[line_no - 1]
+
+                    if not candidate:
+                        line_no += 1
+                        continue
+
+                    if _is_special_boundary(lines, line_no):
+                        break
+
+                    td_lines.append((line_no, candidate))
+                    mark(line_no, "special_td_line", extras={"special_type": special_type})
+                    line_no += 1
+
+                for entry_lines in _split_td_entries(td_lines):
+                    if not entry_lines:
+                        continue
+                    special_records.append(
+                        _parse_td_entry(
+                            entry_lines,
+                            current_event.get("event_no") if current_event else None,
+                            current_event.get("event_name") if current_event else None,
+                            pages[special_start - 1],
+                            marker_line,
+                        )
+                    )
+                continue
 
             swimmer_name: str | None = None
             birth_year: str | None = None

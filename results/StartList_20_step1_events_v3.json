@@ -1,0 +1,1895 @@
+{
+  "detected_version": "11.83565",
+  "step": "step-1-events-only",
+  "data": {
+    "metadata": {
+      "event_title": "Okul Sporları Küçükler Yüzme İl Birinciliği",
+      "event_date": "2.03.2026 - 15:00",
+      "event_location": "ANKARA",
+      "event_name": "Yarış 20",
+      "gender": "Erkekler",
+      "style": "Serbest",
+      "distance": "50m"
+    },
+    "event_count": 5,
+    "events": [
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      }
+    ],
+    "series_count": 22,
+    "series": [
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22
+      },
+      {
+        "event_no": "20",
+        "seri_no": 22,
+        "seri_total": 22
+      }
+    ],
+    "entry_count": 174,
+    "entries": [
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Deniz SÖNMEZ",
+        "year_of_birth": "14",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "31.19"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Ali Bulut EZDER",
+        "year_of_birth": "14",
+        "club": "Nesibe Aydın Yıldızlar Kampüsü",
+        "seed": "30.64"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mert KONUKBAY",
+        "year_of_birth": "14",
+        "club": "Ted Ankara Koleji Vakfı Özel Ortaokulu",
+        "seed": "29.92"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Yaman KARACAÖREN",
+        "year_of_birth": "14",
+        "club": "Ted Ankara Koleji Vakfı Özel Ortaokulu",
+        "seed": "28.58"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Emir Mert ÖZKUL",
+        "year_of_birth": "15",
+        "club": "Özel Yükselen Koleji Ilkokul",
+        "seed": "29.82"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Samed Dünya SOLMAZ",
+        "year_of_birth": "14",
+        "club": "İhsan Doğramacı Vakfı Özel Bilkent Ortaokulu",
+        "seed": "30.56"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Kerem ÇALIK",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "31.02"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 1,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Emir ATCI",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "31.62"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Metehan VURAL",
+        "year_of_birth": "14",
+        "club": "Özel Başkent Bilgi Okulları",
+        "seed": "32.98"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Arda ÇELİK",
+        "year_of_birth": "14",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "32.84"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mert Kaan COŞKUNER",
+        "year_of_birth": "14",
+        "club": "Çayyolu Doğa Koleji",
+        "seed": "32.39"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Turgut ÜSTÜN",
+        "year_of_birth": "14",
+        "club": "Ted Ankara Koleji Vakfı Özel Ortaokulu",
+        "seed": "31.99"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Mehmet Demir ÖZGACAR",
+        "year_of_birth": "14",
+        "club": "Beştepe Koleji",
+        "seed": "32.23"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Oğuz SARI",
+        "year_of_birth": "14",
+        "club": "Izzet Latif Aras Ortaokulu",
+        "seed": "32.68"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Aras GÜLMEZ",
+        "year_of_birth": "14",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "32.98"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 2,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Atlas ÇELİK",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "33.04"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Batu Eymen BARAN",
+        "year_of_birth": "15",
+        "club": "Şehit Yahya Acar Ortaokulu",
+        "seed": "33.58"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Muharrem Kaan SELAMOĞLU",
+        "year_of_birth": "14",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "33.53"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Muhittin Karahan KOÇ",
+        "year_of_birth": "15",
+        "club": "Gülen Muharrem Pakoğlu Ortaokulu",
+        "seed": "33.20"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Muhammed Burak IÇLİ",
+        "year_of_birth": "15",
+        "club": "IL Genel Meclisi Orta Okulu",
+        "seed": "33.11"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Kartal Erce HITAY",
+        "year_of_birth": "15",
+        "club": "Şehit Ersin Utlu Ilkokulu",
+        "seed": "33.18"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Eren GÜRCÜ",
+        "year_of_birth": "15",
+        "club": "Şehit Serhat Öztürk Ortaokulu",
+        "seed": "33.43"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Doruk ATASOY",
+        "year_of_birth": "15",
+        "club": "İhsan Doğramacı Vakfı Özel Bilkent Ortaokulu",
+        "seed": "33.57"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 3,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Kerem Alp ALTUNTAŞ",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "34.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Ateş AKBAY",
+        "year_of_birth": "14",
+        "club": "Ted Ankara Koleji Vakfı Özel Ortaokulu",
+        "seed": "34.60"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Mert GENÇER",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "34.36"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Çınar KÖYSÜREN",
+        "year_of_birth": "14",
+        "club": "Beştepe Koleji",
+        "seed": "34.16"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Salih TURAN",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "34.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Emir Taha YILAR",
+        "year_of_birth": "15",
+        "club": "Özel Çankaya Doğa Ortaokulu",
+        "seed": "34.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Hüseyin Bartu SUNAR",
+        "year_of_birth": "15",
+        "club": "Özel Caner Özen Ortaokulu",
+        "seed": "34.25"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Orhun Bilge ŞENDOĞAN",
+        "year_of_birth": "14",
+        "club": "Ayten Şaban Diri Ortaokulu",
+        "seed": "34.42"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 4,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Kaan Berk SAYGIN",
+        "year_of_birth": "14",
+        "club": "Abdurrahman Şengel Ortaokulu",
+        "seed": "34.62"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Mert Poyraz BAYRAM",
+        "year_of_birth": "14",
+        "club": "Ankara Yaşamkent Bahçeşehir Koleji",
+        "seed": "35.56"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Yasin Arın OK",
+        "year_of_birth": "15",
+        "club": "Büyükhanlı Kardeşler Ortaokulu",
+        "seed": "35.25"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Timur MUT",
+        "year_of_birth": "14",
+        "club": "Mimar Sinan Ortaokulu",
+        "seed": "35.02"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Emir Efe BULUT",
+        "year_of_birth": "14",
+        "club": "Adem Bilhan Uysal Ortaokulu",
+        "seed": "34.92"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Ege Batu ERGİN",
+        "year_of_birth": "14",
+        "club": "Ted Ankara Koleji Vakfı Özel Ortaokulu",
+        "seed": "34.97"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Serdar Efe CANTÜRK",
+        "year_of_birth": "14",
+        "club": "Özel Çankaya Bahçeşehir Koleji Ortaokulu",
+        "seed": "35.15"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Kaan AĞAOĞLU",
+        "year_of_birth": "14",
+        "club": "Özel Yükselen Koleji Ilkokul",
+        "seed": "35.35"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 5,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Emir INAN",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "35.88"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Muhammed Akif AKYOL",
+        "year_of_birth": "14",
+        "club": "Özel Elvankent Ipucu Koleji Ortaokulu",
+        "seed": "36.59"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Yusuf Emir KILIÇ",
+        "year_of_birth": "15",
+        "club": "Şehit Mustafa Aslan Ortaokulu",
+        "seed": "36.44"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Kaan TAŞDAN",
+        "year_of_birth": "15",
+        "club": "Zafer Koleji",
+        "seed": "36.25"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Kaan YÜCEL",
+        "year_of_birth": "15",
+        "club": "Özel Yükselen Koleji",
+        "seed": "35.92"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Çağan Pamir ŞAHİN",
+        "year_of_birth": "15",
+        "club": "Türkkonut Ilkokulu",
+        "seed": "36.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Mehmet Çınar BİRBİLEN",
+        "year_of_birth": "15",
+        "club": "Beytepe Ortaokulu",
+        "seed": "36.33"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Kıvanç Deniz BAĞCI",
+        "year_of_birth": "14",
+        "club": "Hafize Özal Ortaokulu",
+        "seed": "36.56"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 6,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Onur ÖZKALE",
+        "year_of_birth": "14",
+        "club": "Nesibe Aydın Yıldızlar Kampüsü",
+        "seed": "36.61"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Ahmet KIRMIZIOĞLU",
+        "year_of_birth": "15",
+        "club": "Özel Çukurambar Sınav Ortaokulu",
+        "seed": "37.12"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Çağan Mete ÖZER",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "36.95"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Hakan DELİBAŞ",
+        "year_of_birth": "14",
+        "club": "Şehit Suat Aloğlu Ortaokulu",
+        "seed": "36.89"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Deniz ÖZBEK",
+        "year_of_birth": "14",
+        "club": "Özel Kerem Aygün Ortaokulu",
+        "seed": "36.85"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Kadir Ardıç BOLUT",
+        "year_of_birth": "15",
+        "club": "Odtü Geliştirme Vakfı Özel Ankara Ortaokulu",
+        "seed": "36.88"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Yağız ŞAHİN",
+        "year_of_birth": "15",
+        "club": "Cenk Yakın Ortaokulu",
+        "seed": "36.90"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Mustafa Deniz UÇAR",
+        "year_of_birth": "14",
+        "club": "Ticaret Odası Ortaokulu",
+        "seed": "37.02"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 7,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Gazi Çağan BEKTAŞ",
+        "year_of_birth": "15",
+        "club": "Şehit Şükrü Can Kayadibi Ortaokulu",
+        "seed": "37.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Yağız Talha YALÇIN",
+        "year_of_birth": "14",
+        "club": "Batıkent Şehit Erdal Çetin Ortaokulu",
+        "seed": "37.61"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Ali Kerem PEKİN",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "37.40"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mert EROĞLU",
+        "year_of_birth": "15",
+        "club": "Hayri Aslan Ortaokulu",
+        "seed": "37.29"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Hasan AKBULUT",
+        "year_of_birth": "15",
+        "club": "Özel Büyük Ankara Ortaokulu",
+        "seed": "37.14"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Mehmet Eren ÇAKICI",
+        "year_of_birth": "14",
+        "club": "Yavuz Sultan Selim Ortaolkulu",
+        "seed": "37.23"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Tolga Atlas INCE",
+        "year_of_birth": "14",
+        "club": "Tema Koleji",
+        "seed": "37.37"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Ata ÇATAL",
+        "year_of_birth": "15",
+        "club": "Gazi Üniversitesi Vakfı Özel Ortaokulu",
+        "seed": "37.56"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 8,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Bayram Alper GÖĞEBAKAN",
+        "year_of_birth": "14",
+        "club": "Özel Eryaman Artıfen Koleji Ortaokulu",
+        "seed": "37.78"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Demir AYTEN",
+        "year_of_birth": "14",
+        "club": "Özel Batıkent Sınav Ilkokulu",
+        "seed": "38.15"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Kerem KIZILTUĞ",
+        "year_of_birth": "14",
+        "club": "Hafize Özal Ortaokulu",
+        "seed": "38.01"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Arhan EREN",
+        "year_of_birth": "15",
+        "club": "Özel Büyük Kolej",
+        "seed": "37.88"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Rüzgar HASGÜL",
+        "year_of_birth": "14",
+        "club": "Özel Ankara Uğur Ilkokulu",
+        "seed": "37.79"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Salih TUNÇ",
+        "year_of_birth": "15",
+        "club": "Şehit Emre Tunca Ilkokulu",
+        "seed": "37.87"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Ali Nejat ÖZÇİÇEK",
+        "year_of_birth": "15",
+        "club": "Ayten Şaban Diri Ortaokulu",
+        "seed": "37.92"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Toprak AYDIN",
+        "year_of_birth": "15",
+        "club": "Nasrettin Hoca Ortaokulu",
+        "seed": "38.11"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 9,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Utku YILDIZ",
+        "year_of_birth": "15",
+        "club": "Özel Yükselen Koleji Ilkokul",
+        "seed": "38.19"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Alp EGE",
+        "year_of_birth": "15",
+        "club": "Zafer Koleji",
+        "seed": "38.89"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Selim Ege NOHUT",
+        "year_of_birth": "15",
+        "club": "Ayten Tekışık Ortaokulu",
+        "seed": "38.60"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Boran Kaya BAYDURCAN",
+        "year_of_birth": "14",
+        "club": "Özel Kerem Aygün Ortaokulu",
+        "seed": "38.41"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Irfan Doruk BAŞER",
+        "year_of_birth": "14",
+        "club": "Hafize Özal Ortaokulu",
+        "seed": "38.24"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Yaman YANIKOĞLU",
+        "year_of_birth": "14",
+        "club": "Zafer Koleji",
+        "seed": "38.27"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Eymen Ege ALTIN",
+        "year_of_birth": "15",
+        "club": "Özel Çankaya Bahçeşehir Koleji 50.Yıl Ortaokulu",
+        "seed": "38.53"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Ömer HOYLADI",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "38.80"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 10,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Kerem Alp YİĞİT",
+        "year_of_birth": "15",
+        "club": "Beştepe Koleji Beytepe Kampüsü",
+        "seed": "38.96"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Batu Egehan ATASOY",
+        "year_of_birth": "15",
+        "club": "Ugur Okulları Batıkent Kampüs",
+        "seed": "40.33"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Kerem YILMAZ",
+        "year_of_birth": "15",
+        "club": "Özel Bahçeşehir Koleji Batıkent Kampüsü",
+        "seed": "40.30"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mehmet Ata SARICAOĞLU",
+        "year_of_birth": "14",
+        "club": "Özel Ovacık Sınav Koleji",
+        "seed": "39.50"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Yiğit ÖZKAN",
+        "year_of_birth": "14",
+        "club": "Özel Ankara Açı Koleji Ortaokulu",
+        "seed": "38.99"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Yiğit KILIÇ",
+        "year_of_birth": "14",
+        "club": "Nesibe Aydın Okulları",
+        "seed": "39.16"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Yiğit Ali TURAN",
+        "year_of_birth": "14",
+        "club": "Özel Arı Ortaokulu",
+        "seed": "39.83"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Hamza Alperen KAYA",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Pınar Ortaokulu",
+        "seed": "40.33"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 11,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Berat Poyraz KARAYEL",
+        "year_of_birth": "15",
+        "club": "Maltepe Ortaokulu",
+        "seed": "40.60"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Ömer MERT",
+        "year_of_birth": "15",
+        "club": "Orhan Cemal Fersoy Ilkokulu",
+        "seed": "42.17"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Çınar ELTEZ",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "41.70"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Arda TÜRKGENÇ",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "41.20"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Rüzgar AYTEN",
+        "year_of_birth": "14",
+        "club": "Özel Batıkent Sınav Ilkokulu",
+        "seed": "40.91"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Miraç APLAK",
+        "year_of_birth": "15",
+        "club": "Şehit Yahya Acar Ortaokulu",
+        "seed": "41.19"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Alparslan ÖZKAN",
+        "year_of_birth": "15",
+        "club": "Şehit Erdem Ertan Ortaokulu",
+        "seed": "41.21"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Toprak ŞENTÜRK",
+        "year_of_birth": "16",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "42.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 12,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Ege Can ÇELEBİ",
+        "year_of_birth": "15",
+        "club": "Nesibe Aydın Yıldızlar Kampüsü",
+        "seed": "42.44"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Kayra ALBAYRAK",
+        "year_of_birth": "15",
+        "club": "Hafize Özal Ortaokulu",
+        "seed": "43.29"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Mehmet Arda ÇALI",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Pınar Ortaokulu",
+        "seed": "43.08"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Ömer EKREN",
+        "year_of_birth": "15",
+        "club": "Özel Beysukent Ortaokulu",
+        "seed": "42.76"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Boran AYDIN",
+        "year_of_birth": "15",
+        "club": "Özel Atael Ortaokulu",
+        "seed": "42.47"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Burak ÖZDEMİR",
+        "year_of_birth": "14",
+        "club": "Özel Incek Maya Okulları",
+        "seed": "42.75"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Bünyamin GÖLCÜK",
+        "year_of_birth": "15",
+        "club": "Şehit Serhat Öztürk Ortaokulu",
+        "seed": "42.92"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Emir Kaan ÜLGEN",
+        "year_of_birth": "15",
+        "club": "Çankaya Anıttepe Ortaokulu",
+        "seed": "43.24"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 13,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Onur Eymen SAYAROĞLU",
+        "year_of_birth": "14",
+        "club": "Şehit Ali İhsan Lezgi Ortaokulu",
+        "seed": "43.35"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Rüzgar Mustafa SANSAR",
+        "year_of_birth": "14",
+        "club": "Özel Batıkent Yönder Ilkokulu",
+        "seed": "45.43"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Mustafa Kaya ATİK",
+        "year_of_birth": "15",
+        "club": "M.E.V. Batıkent Orta Okulu",
+        "seed": "44.67"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Cihan COŞKUNER",
+        "year_of_birth": "15",
+        "club": "Zafer Koleji",
+        "seed": "43.61"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Berat Bayram BEDİR",
+        "year_of_birth": "15",
+        "club": "Hacı Mustafa Tarman Ortaokulu",
+        "seed": "43.38"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Ahmet Uras TATMA",
+        "year_of_birth": "15",
+        "club": "Girne Koleji",
+        "seed": "43.54"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Tolga Toprak AYDIN",
+        "year_of_birth": "15",
+        "club": "Öğretmen Kubilay Ortaokulu",
+        "seed": "43.98"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Deniz Batu BAŞARAN",
+        "year_of_birth": "15",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "45.14"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 14,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Muhammet Efe TAKIŞ",
+        "year_of_birth": "14",
+        "club": "Şehit Şükrü Can Kayadibi Ortaokulu",
+        "seed": "45.45"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Berk AKKÜLAH",
+        "year_of_birth": "14",
+        "club": "Özel Arı Ortaokulu",
+        "seed": "47.57"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Mete Alp FİDAN",
+        "year_of_birth": "15",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "46.13"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Asım MERT",
+        "year_of_birth": "15",
+        "club": "Orhan Cemal Fersoy Ilkokulu",
+        "seed": "45.74"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Tuna USLU",
+        "year_of_birth": "15",
+        "club": "Hayri Aslan Ortaokulu",
+        "seed": "45.61"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Emir Kaan TAŞYÜREK",
+        "year_of_birth": "15",
+        "club": "Şehit Mustafa Aslan Ortaokulu",
+        "seed": "45.66"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Doruk AYTEN",
+        "year_of_birth": "14",
+        "club": "Münevver Öztürk Ortaokulu",
+        "seed": "45.78"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Ahmet Akif YILDIRIM",
+        "year_of_birth": "15",
+        "club": "Şehit Murat Düger Ortaokulu",
+        "seed": "47.18"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 15,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Doğukan KOTAN",
+        "year_of_birth": "14",
+        "club": "Cebeci Ortaokulu",
+        "seed": "47.88"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Ener MUŞ",
+        "year_of_birth": "14",
+        "club": "Özel Batıkent Yönder Ilkokulu",
+        "seed": "55.35"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Mehmet Haktan KÜÇÜKBAŞ",
+        "year_of_birth": "15",
+        "club": "Özel Ovacık Sınav Koleji",
+        "seed": "50.77"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Musab YELKEN",
+        "year_of_birth": "14",
+        "club": "Şehit Mustafa Aslan Ortaokulu",
+        "seed": "50.53"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Uras YALÇIN",
+        "year_of_birth": "14",
+        "club": "Özel Incek Maya Okulları",
+        "seed": "48.03"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Ahmet Selçuk KINIKLIOĞLU",
+        "year_of_birth": "15",
+        "club": "Özel Ovacık Sınav Koleji",
+        "seed": "49.46"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Çağan Eymen KAVAK",
+        "year_of_birth": "15",
+        "club": "Özel Keçiören Kavram Ortaokulu",
+        "seed": "50.72"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Çağan Ata KAYA",
+        "year_of_birth": "14",
+        "club": "Özel Kariyer Ilkokulu",
+        "seed": "52.91"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 16,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Bartu ERDOĞAN",
+        "year_of_birth": "14",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "56.83"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Rüzgar YAKAR",
+        "year_of_birth": "15",
+        "club": "Özel Incek Maya Okulları",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Gökdeniz TOPRAK",
+        "year_of_birth": "15",
+        "club": "Cebeci Ortaokulu",
+        "seed": "1:10.60"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Rüzgar AĞAOĞLU",
+        "year_of_birth": "14",
+        "club": "Özel Arı Ortaokulu",
+        "seed": "1:03.03"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Turan Yiğit GÜLER",
+        "year_of_birth": "15",
+        "club": "Başkent Örnek Okulları",
+        "seed": "58.72"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Yavuz OKUT",
+        "year_of_birth": "14",
+        "club": "Özel Incek Maya Okulları",
+        "seed": "1:00.11"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Tarık Musab KAYMAZ",
+        "year_of_birth": "15",
+        "club": "Çubuk Ortaokulu",
+        "seed": "1:07.51"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Yiğit Ali YASİN",
+        "year_of_birth": "15",
+        "club": "M.E.V. Batıkent Orta Okulu",
+        "seed": "1:12.79"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Tuna DURAN",
+        "year_of_birth": "15",
+        "club": null,
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 17,
+        "seri_total": 22,
+        "lane": 15,
+        "name": "Temmuz Demokrasi Şehitleri Ilkokulu",
+        "year_of_birth": null,
+        "club": "NT",
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Eymen Uras KARAKAYA",
+        "year_of_birth": "14",
+        "club": "Özel Ovacık Sınav Koleji",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Orhun BAŞARAN",
+        "year_of_birth": "13",
+        "club": "Münevver Öztürk Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mete ARİNÇ",
+        "year_of_birth": "14",
+        "club": "Özel Ankara Uğur Ilkokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Batuhan Çınar MUSLU",
+        "year_of_birth": "14",
+        "club": "Kocatepe Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Mustafa Eymen AKIN",
+        "year_of_birth": "15",
+        "club": "Raf Orbay Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Kerem ARSLAN",
+        "year_of_birth": "15",
+        "club": "Özel Ovacık Sınav Koleji",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Emre Eymen DOĞAN",
+        "year_of_birth": "15",
+        "club": "Münevver Öztürk Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 18,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Baran ÖZTÜRK",
+        "year_of_birth": "14",
+        "club": "Özel Ankara Abc Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Kağan BOZANER",
+        "year_of_birth": "15",
+        "club": "Şehit Bülent Göçer Ilkokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Ata Hakverdi BAYAR",
+        "year_of_birth": "15",
+        "club": "Şehit Hamza ırmak Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Fırat Toprak KILIÇ",
+        "year_of_birth": "13",
+        "club": "Orhan Cemal Fersoy Ilkokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Bahattin Yağız YILMAZ",
+        "year_of_birth": "14",
+        "club": "Polatlı Zafer Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Yiğitalp ARSLAN",
+        "year_of_birth": "15",
+        "club": "Özel Polatlı ışın Yaman Koleji",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Atlas Kaan TÜRKMEN",
+        "year_of_birth": "14",
+        "club": "Özel Batıkent Sınav Ilkokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Doruk Aras KOÇ",
+        "year_of_birth": "15",
+        "club": "Özel Genetik Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 19,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Ömer Asaf ATICI",
+        "year_of_birth": "15",
+        "club": "Polatlı Imam Hatip Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Erbay BAYER",
+        "year_of_birth": "15",
+        "club": "Özel Liderler Eryaman Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Cihangir ÖZŞENSOY",
+        "year_of_birth": "14",
+        "club": "Sincan Necip Fazıl Kısakürek Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Tuğra ÜNAL",
+        "year_of_birth": "14",
+        "club": "Polatlı Istiklal Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Bora Aslan GÜNGÖR",
+        "year_of_birth": "15",
+        "club": "Beştepe Koleji",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Melih YILMAZ",
+        "year_of_birth": "14",
+        "club": "Ayten Şaban Diri Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Ege DURAN",
+        "year_of_birth": "15",
+        "club": null,
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 15,
+        "name": "Temmuz Demokrasi Şehitleri Ilkokulu",
+        "year_of_birth": null,
+        "club": "NT",
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Uzay KOYUNCU",
+        "year_of_birth": "15",
+        "club": "Odtü Geliştirme Vakfı Özel Ankara Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 20,
+        "seri_total": 22,
+        "lane": 8,
+        "name": "Burak KAYAKIRAN",
+        "year_of_birth": "15",
+        "club": "Maltepe Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 1,
+        "name": "Asım Yasin ÇİFÇİ",
+        "year_of_birth": "14",
+        "club": null,
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 29,
+        "name": "Ekim Ortaokulu",
+        "year_of_birth": null,
+        "club": "NT",
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 2,
+        "name": "Eymen Efe BOSTANCI",
+        "year_of_birth": "14",
+        "club": "Münevver Öztürk Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Mehmet Selim BABUL",
+        "year_of_birth": "15",
+        "club": "Orhan Cemal Fersoy Ilkokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Dağhan Deniz YÜKSEL",
+        "year_of_birth": "14",
+        "club": "Namık Kemal Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Mehmet Emin YILMAZ",
+        "year_of_birth": "14",
+        "club": "Namık Kemal Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 6,
+        "name": "Aziz Çınar EJDER",
+        "year_of_birth": "15",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 7,
+        "name": "Mehmet Eymen KILIÇ",
+        "year_of_birth": "14",
+        "club": null,
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 21,
+        "seri_total": 22,
+        "lane": 29,
+        "name": "Ekim Ortaokulu",
+        "year_of_birth": null,
+        "club": "NT",
+        "seed": null
+      },
+      {
+        "event_no": "20",
+        "seri_no": 22,
+        "seri_total": 22,
+        "lane": 3,
+        "name": "Emir SUBAŞI",
+        "year_of_birth": "14",
+        "club": "Namık Kemal Ortaokulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 22,
+        "seri_total": 22,
+        "lane": 4,
+        "name": "Demir OKUMUŞ",
+        "year_of_birth": "14",
+        "club": "Özel Tevfik Fikret Ilköğretim Okulu",
+        "seed": "NT"
+      },
+      {
+        "event_no": "20",
+        "seri_no": 22,
+        "seri_total": 22,
+        "lane": 5,
+        "name": "Mehmet Kaan ÇABUK",
+        "year_of_birth": "14",
+        "club": "Mev Koleji Özel Ankara Okulları",
+        "seed": "NT"
+      }
+    ],
+    "line_count": 747
+  }
+}

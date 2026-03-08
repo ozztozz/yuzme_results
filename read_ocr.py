@@ -107,7 +107,13 @@ def detect_pdf_needs_ocr(input_pdf: Path, sample_pages: int = 5) -> bool:
     return native_char_count < 200
 
 
-def _extract_with_fitz_ocr(page: fitz.Page, ocr_language: str, tessdata: str | None) -> str:
+def _extract_with_fitz_ocr(page: fitz.Page, ocr_language: str, tessdata: str | None, dpi: int = 300) -> str:
+    """Extract text using fitz (PyMuPDF) OCR with Tesseract.
+    
+    OCR Quality Tips:
+    - Use 300 DPI minimum, 600 DPI for complex fonts or dense Turkish text
+    - For best results, preprocess PDFs: increase contrast, deskew pages
+    """
     normalized_language = ocr_language
     if not _language_available(tessdata, normalized_language):
         normalized_language = "eng"
@@ -121,7 +127,7 @@ def _extract_with_fitz_ocr(page: fitz.Page, ocr_language: str, tessdata: str | N
         if language in FAILED_OCR_LANGUAGES:
             continue
 
-        kwargs = {"language": language, "dpi": 300}
+        kwargs = {"language": language, "dpi": dpi}
         if tessdata:
             kwargs["tessdata"] = tessdata
 
@@ -141,13 +147,26 @@ def _extract_with_fitz_ocr(page: fitz.Page, ocr_language: str, tessdata: str | N
     return ""
 
 
-def _map_to_paddle_lang(ocr_language: str) -> str:
+def _map_to_paddle_lang_candidates(ocr_language: str) -> list[str]:
     language = ocr_language.lower()
+    candidates: list[str] = []
+
     if "tur" in language:
-        return "latin"
+        # PaddleOCR expects language code, not recognition family name.
+        candidates.append("tr")
     if "eng" in language:
-        return "en"
-    return "latin"
+        candidates.append("en")
+
+    if not candidates:
+        candidates = ["tr", "en"]
+
+    # Keep order but remove duplicates.
+    deduped: list[str] = []
+    for code in candidates:
+        if code not in deduped:
+            deduped.append(code)
+
+    return deduped
 
 
 def _get_paddle_ocr(lang: str) -> object:
@@ -157,40 +176,61 @@ def _get_paddle_ocr(lang: str) -> object:
     paddleocr_module = importlib.import_module("paddleocr")
     PaddleOCR = getattr(paddleocr_module, "PaddleOCR")
 
+    # Initialize with minimal valid parameters for current PaddleOCR version
     reader = PaddleOCR(
-        use_angle_cls=True,
         lang=lang,
-        show_log=False,
+        ocr_version="PP-OCRv5",
     )
     PADDLE_OCR_INSTANCES[lang] = reader
     return reader
 
 
-def _extract_with_paddleocr(page: fitz.Page, ocr_language: str) -> str:
+def _extract_with_paddleocr(page: fitz.Page, ocr_language: str, scale: float = 3.0) -> str:
+    """Extract text using PaddleOCR.
+    
+    Scale factor controls effective DPI (3.0 = ~900 DPI, 2.0 = ~600 DPI).
+    Higher scale improves accuracy but increases processing time.
+    """
     import numpy as np
     from PIL import Image
 
-    matrix = fitz.Matrix(3, 3)
+    matrix = fitz.Matrix(scale, scale)
     pixmap = page.get_pixmap(matrix=matrix, alpha=False)
     image = Image.open(BytesIO(pixmap.tobytes("png"))).convert("RGB")
 
-    ocr = _get_paddle_ocr(_map_to_paddle_lang(ocr_language))
-    result = ocr.ocr(np.array(image), cls=True)
+    result = None
+    last_error: Exception | None = None
+    for paddle_lang in _map_to_paddle_lang_candidates(ocr_language):
+        try:
+            ocr = _get_paddle_ocr(paddle_lang)
+            result = ocr.predict(np.array(image))
+            break
+        except Exception as error:
+            error_message = str(error)
+            # Only try next language if this exact model-language combination is unsupported.
+            if "No models are available for the language" in error_message:
+                last_error = error
+                continue
+            raise
+
+    if result is None:
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("paddleocr returned no result for all language candidates")
 
     lines: list[str] = []
+    # Handle result format: predict() returns list of (box, text, confidence) tuples per page
     for page_result in result or []:
         if not page_result:
             continue
         for item in page_result:
-            if len(item) < 2:
-                continue
-            text_part = item[1]
-            if isinstance(text_part, (tuple, list)) and text_part:
-                text = str(text_part[0]).strip()
-            else:
+            # Extract text from tuple (box_coords, text, confidence)
+            if isinstance(item, (tuple, list)) and len(item) >= 2:
+                # Format: (box, text, confidence)
+                text_part = item[1] if len(item) > 1 else item[0]
                 text = str(text_part).strip()
-            if text:
-                lines.append(text)
+                if text:
+                    lines.append(text)
 
     return normalize_turkish_ocr_text("\n".join(lines))
 
@@ -223,11 +263,16 @@ def _get_easyocr_reader(langs: list[str]) -> object:
     return reader
 
 
-def _extract_with_easyocr(page: fitz.Page, ocr_language: str) -> str:
+def _extract_with_easyocr(page: fitz.Page, ocr_language: str, scale: float = 3.0) -> str:
+    """Extract text using EasyOCR.
+    
+    Scale factor controls effective DPI (3.0 = ~900 DPI, 2.0 = ~600 DPI).
+    For Turkish sports result PDFs with small text, 3.0+ recommended.
+    """
     import numpy as np
     from PIL import Image
 
-    matrix = fitz.Matrix(3, 3)
+    matrix = fitz.Matrix(scale, scale)
     pixmap = page.get_pixmap(matrix=matrix, alpha=False)
     image = Image.open(BytesIO(pixmap.tobytes("png"))).convert("RGB")
 
@@ -270,7 +315,15 @@ def extract_page_text(
     tessdata: str | None,
     force_ocr: bool = False,
     ocr_backend: str = "easyocr",
+    ocr_dpi: int = 300,
+    ocr_scale: float = 3.0,
 ) -> str:
+    """Extract text from a PDF page, using OCR if needed.
+    
+    Args:
+        ocr_dpi: DPI for fitz/Tesseract OCR (300 min, 600 for complex fonts)
+        ocr_scale: Scale factor for easyocr/paddleocr (3.0 = ~900 DPI equivalent)
+    """
     if not force_ocr:
         text = page.get_text("text").strip()
         if text:
@@ -279,7 +332,7 @@ def extract_page_text(
     normalized_backend = ocr_backend.strip().lower()
     if normalized_backend == "easyocr":
         try:
-            text = _extract_with_easyocr(page, ocr_language)
+            text = _extract_with_easyocr(page, ocr_language, ocr_scale)
             return text
         except ModuleNotFoundError as error:
             raise RuntimeError(
@@ -291,12 +344,14 @@ def extract_page_text(
 
     if normalized_backend == "paddleocr":
         try:
-            text = _extract_with_paddleocr(page, ocr_language)
+            text = _extract_with_paddleocr(page, ocr_language, ocr_scale)
             return text
         except ModuleNotFoundError as error:
+            missing_module = getattr(error, "name", None) or "unknown"
             raise RuntimeError(
-                "paddleocr backend selected but package is not installed. "
-                "Install 'paddleocr' and a compatible 'paddlepaddle' build first."
+                "paddleocr backend dependency is missing "
+                f"(module: {missing_module}). Install 'paddleocr' and a compatible "
+                "'paddlepaddle' build first."
             ) from error
         except Exception as error:
             raise RuntimeError(f"paddleocr backend failed: {error}") from error
@@ -304,5 +359,5 @@ def extract_page_text(
     if normalized_backend not in {"fitz", "easyocr", "paddleocr"}:
         raise ValueError(f"Unknown OCR backend: {ocr_backend}")
 
-    text = _extract_with_fitz_ocr(page, ocr_language, tessdata)
+    text = _extract_with_fitz_ocr(page, ocr_language, tessdata, ocr_dpi)
     return normalize_turkish_ocr_text(text)

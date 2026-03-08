@@ -9,23 +9,17 @@ import fitz
 from read_ocr import detect_pdf_needs_ocr, detect_tessdata_path, extract_page_text
 
 
-def extract_pdf_text(
+def extract_pdf_text_with_paddleocr(
     input_pdf: Path,
     output_txt: Path,
     ocr_language: str,
     tessdata: str | None,
-    needs_ocr: bool,
-    ocr_backend: str,
-    ocr_dpi: int = 300,
-    ocr_scale: float = 3.0,
+    force_ocr: bool,
+    ocr_scale: float,
+    ocr_dpi: int,
+    ocr_backend: str = "paddleocr",
 ) -> int:
-    """Extract text from PDF, using OCR if needed.
-    
-    For improved OCR accuracy:
-    - Increase ocr_dpi to 600 for complex fonts (default 300)
-    - Increase ocr_scale to 4.0+ for dense text (default 3.0)
-    - Preprocess source PDFs: enhance contrast, deskew pages
-    """
+    """Extract text from PDF with OCR backend."""
     output_txt.parent.mkdir(parents=True, exist_ok=True)
 
     pages_written = 0
@@ -37,7 +31,7 @@ def extract_pdf_text(
                 page,
                 ocr_language=ocr_language,
                 tessdata=tessdata,
-                force_ocr=needs_ocr,
+                force_ocr=force_ocr,
                 ocr_backend=ocr_backend,
                 ocr_dpi=ocr_dpi,
                 ocr_scale=ocr_scale,
@@ -55,49 +49,56 @@ def extract_pdf_text(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Extract text from ResultList_20.pdf into a TXT file")
+    parser = argparse.ArgumentParser(
+        description="Convert a Results PDF to text using OCR (PaddleOCR or EasyOCR)"
+    )
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("results/ResultList_20.pdf"),
-        help="Input PDF file path",
+        default=Path("results/ResultList_22.pdf"),
+        help="Input Results PDF path",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("results/ResultList_20_text.txt"),
-        help="Output TXT file path",
+        default=Path("results/ResultList_22_text_paddleocr.txt"),
+        help="Output text file path",
     )
     parser.add_argument(
         "--ocr-language",
         type=str,
         default="tur+eng",
-        help="OCR language used when native PDF text is missing",
+        help="OCR language preference",
     )
     parser.add_argument(
-        "--ocr-backend",
-        type=str,
-        default="easyocr",
-        choices=["fitz", "easyocr", "paddleocr"],
-        help="OCR backend: easyocr (default), fitz, or paddleocr",
+        "--ocr-scale",
+        type=float,
+        default=4.0,
+        help="Scale factor for OCR rendering (higher can improve small text)",
     )
     parser.add_argument(
         "--ocr-dpi",
         type=int,
         default=300,
-        help="DPI for fitz OCR (300 default, 600 for complex fonts)",
+        help="Fallback DPI value passed through for compatibility",
     )
     parser.add_argument(
-        "--ocr-scale",
-        type=float,
-        default=3.0,
-        help="Scale factor for easyocr/paddleocr (3.0 default = ~900 DPI)",
+        "--force-ocr",
+        action="store_true",
+        help="Force OCR even when native text is present",
     )
     parser.add_argument(
         "--tessdata",
         type=str,
         default=None,
-        help="Optional explicit tessdata directory",
+        help="Optional tessdata directory (used only if fallback OCR backend is triggered)",
+    )
+    parser.add_argument(
+        "--backend",
+        type=str,
+        default="easyocr",
+        choices=["easyocr", "paddleocr"],
+        help="OCR backend to use (default: easyocr for WSL2 stability)",
     )
     args = parser.parse_args()
 
@@ -105,24 +106,27 @@ def main() -> None:
         raise FileNotFoundError(f"Input PDF not found: {args.input}")
 
     tessdata = args.tessdata or detect_tessdata_path()
-    ocr_language = args.ocr_language
     needs_ocr = detect_pdf_needs_ocr(args.input)
+    use_force_ocr = args.force_ocr or needs_ocr
+
     try:
-        page_count = extract_pdf_text(
-            args.input,
-            args.output,
-            ocr_language=ocr_language,
+        page_count = extract_pdf_text_with_paddleocr(
+            input_pdf=args.input,
+            output_txt=args.output,
+            ocr_language=args.ocr_language,
             tessdata=tessdata,
-            needs_ocr=needs_ocr,
-            ocr_backend=args.ocr_backend,
-            ocr_dpi=args.ocr_dpi,
+            force_ocr=use_force_ocr,
             ocr_scale=args.ocr_scale,
+            ocr_dpi=args.ocr_dpi,
+            ocr_backend=args.backend,
         )
     except RuntimeError as error:
         print(str(error), file=sys.stderr)
         raise SystemExit(1) from error
 
     print(f"OCR needed: {needs_ocr}")
+    print(f"Force OCR used: {use_force_ocr}")
+    print(f"Backend: {args.backend}")
     print(f"Saved text from {page_count} pages to {args.output}")
 
 

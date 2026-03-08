@@ -1,0 +1,34 @@
+{
+  "detected_version": "11.83565",
+  "step": "step-1-events-only",
+  "data": {
+    "metadata": {
+      "event_title": "Okul Sporları Küçükler Yüzme İl Birinciliği",
+      "event_date": "3.03.2026"
+    },
+    "event_count": 5,
+    "events": [
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      },
+      {
+        "event_no": "20",
+        "event_name": "Yarış 20, Erkekler, 50m Serbest"
+      }
+    ],
+    "line_count": 747
+  }
+}
