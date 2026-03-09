@@ -242,9 +242,18 @@ def run_surya_ocr(
 
     # Prefer newly created files containing the current PDF stem.
     new_candidates = [path for path in after_candidates if path not in before_files]
-    stem_candidates = [path for path in new_candidates if input_pdf.stem.lower() in path.stem.lower()]
+    pdf_stem_lower = input_pdf.stem.lower()
+
+    def _path_mentions_pdf_stem(path: Path) -> bool:
+        if pdf_stem_lower in path.stem.lower():
+            return True
+        if pdf_stem_lower in path.parent.name.lower():
+            return True
+        return False
+
+    stem_candidates = [path for path in new_candidates if _path_mentions_pdf_stem(path)]
     if not stem_candidates:
-        stem_candidates = [path for path in after_candidates if input_pdf.stem.lower() in path.stem.lower()]
+        stem_candidates = [path for path in after_candidates if _path_mentions_pdf_stem(path)]
 
     if not stem_candidates:
         diagnostic_text = ""
