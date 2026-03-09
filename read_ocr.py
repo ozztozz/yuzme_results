@@ -277,7 +277,19 @@ def _extract_with_easyocr(page: fitz.Page, ocr_language: str, scale: float = 3.0
     image = Image.open(BytesIO(pixmap.tobytes("png"))).convert("RGB")
 
     reader = _get_easyocr_reader(_map_to_easyocr_langs(ocr_language))
-    result = reader.readtext(np.array(image), detail=0, paragraph=False)
+    # High-quality preset for dense race result tables.
+    result = reader.readtext(
+        np.array(image),
+        detail=0,
+        paragraph=False,
+        decoder="beamsearch",
+        beamWidth=10,
+        contrast_ths=0.05,
+        adjust_contrast=0.7,
+        text_threshold=0.5,
+        low_text=0.3,
+        link_threshold=0.3,
+    )
 
     lines: list[str] = []
     for item in result or []:
