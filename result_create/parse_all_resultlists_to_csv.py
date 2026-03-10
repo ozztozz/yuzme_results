@@ -14,6 +14,7 @@ from read_ocr import detect_pdf_needs_ocr, detect_tessdata_path
 
 LIST_NUMBER_RE = re.compile(r"(?i)resultlist_(\d+)")
 INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*]+')
+SPLASH_SUFFIX_RE = re.compile(r"\s*-\s*SPLASH\s+Meet\s+Manager\s*\d*", re.IGNORECASE)
 
 OUTPUT_FIELDS = [
     "event_title_folder",
@@ -52,13 +53,13 @@ def extract_list_number(file_path: Path) -> str | None:
 def infer_event_title_from_result_path(result_pdf: Path) -> str:
     # New layout: <base>/<event_title>/results/ResultList_N.pdf
     if result_pdf.parent.name.lower() == "results" and result_pdf.parent.parent.name:
-        return result_pdf.parent.parent.name
+        return SPLASH_SUFFIX_RE.sub("", result_pdf.parent.parent.name).strip()
 
     # Legacy layout: <base>/results/<event_title>/ResultList_N.pdf
     if result_pdf.parent.parent.name.lower() == "results" and result_pdf.parent.name:
-        return result_pdf.parent.name
+        return SPLASH_SUFFIX_RE.sub("", result_pdf.parent.name).strip()
 
-    return result_pdf.parent.name or "unknown_event"
+    return SPLASH_SUFFIX_RE.sub("", result_pdf.parent.name or "unknown_event").strip()
 
 
 def discover_result_pdfs(root_dir: Path, event_title: str | None = None) -> list[Path]:

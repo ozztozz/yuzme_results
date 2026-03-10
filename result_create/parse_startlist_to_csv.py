@@ -26,6 +26,16 @@ EVENT_DATE_TIME_RE = re.compile(r"\b\d{1,2}\.\d{1,2}\.\d{4}\b\s*-\s*\d{1,2}:\d{2
 LOCATION_LINE_RE = re.compile(r"^([A-ZÇĞİÖŞÜ]+)\s*,")
 EVENT_DESCRIPTOR_RE = re.compile(r"^(Erkekler|Kızlar)\s*,\s*(\d{1,4}m)\s+(.+)$", re.IGNORECASE)
 TAG_RE = re.compile(r"^\((?:Tk|Fd|Td)\)\s*", re.IGNORECASE)
+SPLASH_SUFFIX_RE = re.compile(r"\s*-\s*SPLASH\s+Meet\s+Manager\s*\d*", re.IGNORECASE)
+
+
+EVENT_ORDER_RE = re.compile(r"(\d+)")
+
+
+def extract_event_order(path: Path) -> int | None:
+    """Return the first integer found in the PDF/text filename stem, e.g. start1 -> 1."""
+    match = EVENT_ORDER_RE.search(path.stem)
+    return int(match.group(1)) if match else None
 
 
 def detect_splash_version(text: str) -> str:
@@ -54,6 +64,7 @@ def extract_header_metadata(lines: list[str]) -> dict[str, str | None]:
     gender: str | None = None
     style: str | None = None
     distance: str | None = None
+    event_order: int | None = None
 
     # First, prefer explicit event schedule date-time if present anywhere near top.
     for line in lines[:200]:
@@ -85,7 +96,7 @@ def extract_header_metadata(lines: list[str]) -> dict[str, str | None]:
 
         # First descriptive non-system line is generally the event title.
         if event_title is None and not DATE_LINE_RE.search(line):
-            event_title = line
+            event_title = SPLASH_SUFFIX_RE.sub("", line).strip()
 
     # Parse first event block for document-level event metadata.
     first_event_idx = None
@@ -265,6 +276,7 @@ def write_entries_csv(data: dict[str, Any], output_csv: Path) -> int:
     output_csv.parent.mkdir(parents=True, exist_ok=True)
 
     fieldnames = [
+        "event_order",
         "event_no",
         "seri_no",
         "seri_total",
@@ -309,6 +321,8 @@ def main() -> None:
     if not args.input.exists():
         raise FileNotFoundError(f"Input text file not found: {args.input}")
 
+    event_order = extract_event_order(args.input)
+
     try:
         text = args.input.read_text(encoding="utf-8")
         version = detect_splash_version(text)
@@ -317,9 +331,13 @@ def main() -> None:
         print(str(error), file=sys.stderr)
         raise SystemExit(1) from error
 
+    for entry in data.get("entries", []):
+        entry["event_order"] = event_order
+
     payload = {
         "detected_version": version,
         "step": "step-1-events-only",
+        "event_order": event_order,
         "data": data,
     }
 

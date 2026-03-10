@@ -6,11 +6,15 @@ class Event(models.Model):
     date = models.DateField()
     location = models.CharField(max_length=255)
 
+    class Meta:
+        unique_together = [("title", "date", "location")]
+
     def __str__(self):
         return self.title
 
 class Result(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event_order = models.IntegerField(default=0)
     swimmer_name = models.CharField(max_length=255)
     year_of_birth = models.IntegerField()
     gender = models.CharField(max_length=10)    
@@ -26,5 +30,5 @@ class Result(models.Model):
 
 
     def __str__(self):
-        return f"{self.swimmer_name} - {self.time} (Rank: {self.rank})"
+        return f"{self.swimmer_name} - {self.result} (Rank: {self.rank})"
     

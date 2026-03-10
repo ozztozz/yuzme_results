@@ -22,6 +22,7 @@ INVALID_FILENAME_CHARS_RE = re.compile(r'[<>:"/\\|?*]+')
 EVENT_NAME_WITH_PREFIX_RE = re.compile(r"^Yarış\s+\d+\s*,\s*(.+)$", re.IGNORECASE)
 DISTANCE_STYLE_RE = re.compile(r"^(\d+(?:\s*x\s*\d+)?m)\s+(.+)$", re.IGNORECASE)
 LIST_NUMBER_RE = re.compile(r"(?i)(?:start|result)list_(\d+)")
+SPLASH_SUFFIX_RE = re.compile(r"\s*-\s*SPLASH\s+Meet\s+Manager\s*\d*", re.IGNORECASE)
 TURKISH_ASCII_MAP = str.maketrans(
     {
         "ı": "i",
@@ -77,6 +78,7 @@ OUTPUT_FIELDS = [
     "swimming_style",
     *ENTRY_FIELDS,
     "result",
+    "rank",
 ]
 
 
@@ -85,6 +87,7 @@ class ResultScoreCandidate:
     name_norm: str
     club_norm: str
     result_value: str
+    rank_value: str | None = None
     used: bool = False
 
 
@@ -98,13 +101,13 @@ def safe_name(value: str, fallback: str = "untitled") -> str:
 def infer_event_title_from_path(pdf_path: Path) -> str:
     # New layout: <base>/<event_title>/startlists/<file>.pdf
     if pdf_path.parent.name.lower() == "startlists" and pdf_path.parent.parent.name:
-        return pdf_path.parent.parent.name
+        return SPLASH_SUFFIX_RE.sub("", pdf_path.parent.parent.name).strip()
 
     # Legacy layout: <base>/startlists/<event_title>/<file>.pdf
     if pdf_path.parent.parent.name.lower() == "startlists" and pdf_path.parent.name:
-        return pdf_path.parent.name
+        return SPLASH_SUFFIX_RE.sub("", pdf_path.parent.name).strip()
 
-    return pdf_path.parent.name or "unknown_event"
+    return SPLASH_SUFFIX_RE.sub("", pdf_path.parent.name or "unknown_event").strip()
 
 
 def extract_list_number(file_path: Path) -> str | None:
@@ -311,6 +314,7 @@ def parse_result_pdf_scores(
     special_records = payload.get("special_records", [])
 
     score_map: dict[tuple[str, str], str] = {}
+    rank_map: dict[tuple[str, str], str] = {}
     candidates: list[ResultScoreCandidate] = []
     dedupe_candidates: set[tuple[str, str, str]] = set()
 
@@ -321,6 +325,8 @@ def parse_result_pdf_scores(
 
         swimmer_name = record.get("swimmer_name")
         club = record.get("club")
+        rank_raw = record.get("rank")
+        rank_text = str(rank_raw) if rank_raw is not None else None
 
         name_norm = normalize_match_text(swimmer_name)
         club_norm = normalize_match_text(club)
@@ -332,6 +338,8 @@ def parse_result_pdf_scores(
         for key in make_match_keys(swimmer_name, club):
             if key not in score_map:
                 score_map[key] = result_text
+            if rank_text is not None and key not in rank_map:
+                rank_map[key] = rank_text
 
         candidate_key = (name_norm, club_norm, result_text)
         if candidate_key in dedupe_candidates:
@@ -339,10 +347,10 @@ def parse_result_pdf_scores(
 
         dedupe_candidates.add(candidate_key)
         candidates.append(
-            ResultScoreCandidate(name_norm=name_norm, club_norm=club_norm, result_value=result_text)
+            ResultScoreCandidate(name_norm=name_norm, club_norm=club_norm, result_value=result_text, rank_value=rank_text)
         )
 
-    return score_map, candidates
+    return score_map, rank_map, candidates
 
 
 def _gemini_rows_from_csv_text(csv_text: str) -> list[dict[str, Any]]:
@@ -448,7 +456,7 @@ def parse_result_pdf_scores_gemini(result_pdf_path: Path) -> tuple[dict[tuple[st
         dedupe_candidates.add(candidate_key)
         candidates.append(ResultScoreCandidate(name_norm=name_norm, club_norm=club_norm, result_value=result_text))
 
-    return score_map, candidates
+    return score_map, {}, candidates
 
 
 def _fuzzy_best_candidate(
@@ -491,14 +499,15 @@ def _fuzzy_best_candidate(
 
 def apply_scores_to_rows(
     rows: list[dict[str, Any]],
-    score_data: tuple[dict[tuple[str, str], str], list[ResultScoreCandidate]],
+    score_data: tuple[dict[tuple[str, str], str], dict[tuple[str, str], str], list[ResultScoreCandidate]],
 ) -> tuple[int, int]:
-    score_map, candidates = score_data
+    score_map, rank_map, candidates = score_data
     matched_count = 0
     fuzzy_matched_count = 0
 
     for row in rows:
         row["result"] = None
+        row["rank"] = None
 
         name = row.get("name")
         if not normalize_match_text(name):
@@ -508,6 +517,7 @@ def apply_scores_to_rows(
             score = score_map.get(key)
             if score is not None:
                 row["result"] = score
+                row["rank"] = rank_map.get(key)
                 matched_count += 1
                 break
 
@@ -521,6 +531,7 @@ def apply_scores_to_rows(
         if candidate is not None:
             candidate.used = True
             row["result"] = candidate.result_value
+            row["rank"] = candidate.rank_value
             matched_count += 1
             fuzzy_matched_count += 1
 
@@ -685,7 +696,7 @@ def main() -> None:
     score_failures: list[tuple[Path, str]] = []
     score_cache: dict[
         Path,
-        tuple[dict[tuple[str, str], str], list[ResultScoreCandidate]],
+        tuple[dict[tuple[str, str], str], dict[tuple[str, str], str], list[ResultScoreCandidate]],
     ] = {}
     with_result_total = 0
     without_result_total = 0
@@ -730,7 +741,7 @@ def main() -> None:
                         score_failures.append((result_pdf, str(error)))
                         print(f"Failed score parse {result_pdf.name}: {error}", file=sys.stderr)
 
-                matched, fuzzy_matched = apply_scores_to_rows(rows, score_cache.get(result_pdf, ({}, [])))
+                matched, fuzzy_matched = apply_scores_to_rows(rows, score_cache.get(result_pdf, ({}, {}, [])))
                 matched_scores_total += matched
                 fuzzy_scores_total += fuzzy_matched
                 print(
