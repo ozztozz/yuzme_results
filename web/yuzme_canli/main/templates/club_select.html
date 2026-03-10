@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Kulup Secimi | Yuzme Canli{% endblock %}
+
+{% block content %}
+<section class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">Kulup Secimi</h1>
+    <p class="opacity-80">Her kullanici kendi kulubunu secebilir. Secim oturum bazinda saklanir.</p>
+</section>
+
+<section class="grid gap-6 lg:grid-cols-3 mb-8">
+    <div class="card bg-base-100 border border-base-200 shadow-sm lg:col-span-1">
+        <div class="card-body">
+            <h2 class="card-title text-lg">Kulubumu Sec</h2>
+            <form method="post" class="space-y-3">
+                {% csrf_token %}
+                <select name="club" class="select select-bordered w-full" required>
+                    <option value="" disabled {% if not selected_club %}selected{% endif %}>Kulup seciniz</option>
+                    {% for club in clubs %}
+                    <option value="{{ club }}" {% if selected_club == club %}selected{% endif %}>{{ club }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary w-full">Secimi Kaydet</button>
+            </form>
+
+            <form method="post" class="mt-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="clear">
+                <button type="submit" class="btn btn-outline w-full">Secimi Temizle</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card bg-base-100 border border-base-200 shadow-sm lg:col-span-2">
+        <div class="card-body">
+            <h2 class="card-title text-lg">Secili Kulup Ozeti</h2>
+            {% if selected_club %}
+            <div class="flex flex-wrap gap-2 mb-2">
+                <span class="badge badge-primary">{{ selected_club }}</span>
+                <span class="badge badge-outline">{{ club_event_count }} etkinlik</span>
+                <span class="badge badge-outline">{{ club_result_count }} sonuc</span>
+            </div>
+            {% else %}
+            <p class="opacity-70">Henuz kulup secilmedi.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="overflow-x-auto rounded-2xl border border-base-200 bg-base-100 shadow-sm">
+    <table class="table table-zebra table-sm sm:table-md">
+        <thead>
+            <tr>
+                <th>Yuzucu</th>
+                <th>Stil</th>
+                <th>Mesafe</th>
+                <th>Sonuc</th>
+                <th>Sira</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in latest_club_rows %}
+            <tr>
+                <td>{{ row.swimmer_name }}</td>
+                <td>{{ row.swimming_style }}</td>
+                <td>{{ row.distance }}</td>
+                <td>{{ row.result }}</td>
+                <td>{{ row.rank }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="opacity-70">Secili kulup icin gosterilecek sonuc yok.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="cupcake">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Yuzme Canli{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.13/dist/full.min.css" rel="stylesheet" type="text/css">
+
+    <style>
+        :root {
+            --brand-ink: #182028;
+            --brand-coral: #ff7a59;
+            --brand-sand: #fff7ef;
+            --brand-sea: #b6e5df;
+            --brand-sun: #ffd58a;
+        }
+
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            color: var(--brand-ink);
+            background:
+                radial-gradient(1200px 500px at 0% -10%, rgba(255, 122, 89, 0.20), transparent 60%),
+                radial-gradient(900px 400px at 100% 0%, rgba(182, 229, 223, 0.35), transparent 60%),
+                linear-gradient(180deg, #fffdf9 0%, var(--brand-sand) 100%);
+            min-height: 100vh;
+        }
+
+        .mono {
+            font-family: "IBM Plex Mono", monospace;
+        }
+
+        .shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.75rem;
+        }
+
+        @media (min-width: 640px) {
+            .shell {
+                padding: 1rem;
+            }
+        }
+
+        .lift {
+            animation: liftIn 420ms ease both;
+        }
+
+        @keyframes liftIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="shell">
+        <div class="bg-base-100/80 backdrop-blur border border-base-200 rounded-2xl shadow-sm p-2 sm:p-3">
+            <div class="flex items-center justify-between gap-2">
+                <a href="/" class="btn btn-ghost text-lg sm:text-xl">Yuzme Canli</a>
+                {% if request.session.selected_club %}
+                <span class="hidden sm:inline-flex badge badge-primary badge-outline max-w-56 truncate">{{ request.session.selected_club }}</span>
+                {% endif %}
+            </div>
+
+            <div class="mt-2 overflow-x-auto">
+                <nav class="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
+                    <a href="/" class="btn btn-sm btn-ghost whitespace-nowrap">Ana Sayfa</a>
+                    <a href="/events/" class="btn btn-sm btn-outline whitespace-nowrap">Etkinlikler</a>
+                    <a href="/swimmers/" class="btn btn-sm btn-outline whitespace-nowrap">Yuzucu Sonuclari</a>
+                    <a href="/clubs/" class="btn btn-sm btn-outline whitespace-nowrap">Kulup Secimi</a>
+                </nav>
+            </div>
+
+            {% if request.session.selected_club %}
+            <div class="mt-2 sm:hidden">
+                <span class="badge badge-primary badge-outline max-w-full truncate">{{ request.session.selected_club }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="shell lift">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="shell pb-8">
+        <div class="text-center text-sm opacity-75 mono">Yerel ayrisma -> web veri aktarma paneli</div>
+    </footer>
+</body>
+</html>
