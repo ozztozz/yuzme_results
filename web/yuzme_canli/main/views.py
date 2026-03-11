@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
 from .event_creator import get_or_create_event_from_url
-from .ingest import ingest_rows
+from .ingest import ingest_event_rows, ingest_rows
 from .models import Event, Result
 
 # Create your views here.
@@ -233,6 +233,58 @@ def ingest_results(request: HttpRequest) -> JsonResponse:
                 rows = _extract_rows_from_csv_text(body_text)
 
         summary = ingest_rows(rows, dry_run=dry_run)
+        return JsonResponse({"ok": True, "dry_run": dry_run, "summary": summary})
+
+    except json.JSONDecodeError as error:
+        return JsonResponse({"error": f"Invalid JSON: {error}"}, status=400)
+    except Exception as error:
+        return JsonResponse({"error": str(error)}, status=400)
+
+
+@csrf_exempt
+def ingest_events(request: HttpRequest) -> JsonResponse:
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST is allowed"}, status=405)
+
+    required_token = os.getenv("YUZME_INGEST_TOKEN", "").strip()
+    provided_token = request.headers.get("X-Ingest-Token", "").strip()
+    if required_token and provided_token != required_token:
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    dry_run = request.GET.get("dry_run") == "1"
+
+    try:
+        rows: list[dict[str, object]]
+
+        uploaded = request.FILES.get("file")
+        if uploaded is not None:
+            payload = uploaded.read().decode("utf-8-sig", errors="replace")
+            if uploaded.name.lower().endswith(".json"):
+                parsed = json.loads(payload)
+                if isinstance(parsed, dict) and isinstance(parsed.get("rows"), list):
+                    rows = parsed["rows"]
+                elif isinstance(parsed, list):
+                    rows = parsed
+                else:
+                    return JsonResponse({"error": "JSON must be a list or {\"rows\": [...] }"}, status=400)
+            else:
+                rows = _extract_rows_from_csv_text(payload)
+        else:
+            content_type = (request.content_type or "").lower()
+            body_text = request.body.decode("utf-8-sig", errors="replace")
+
+            if "application/json" in content_type or body_text.lstrip().startswith("[") or body_text.lstrip().startswith("{"):
+                parsed = json.loads(body_text)
+                if isinstance(parsed, dict) and isinstance(parsed.get("rows"), list):
+                    rows = parsed["rows"]
+                elif isinstance(parsed, list):
+                    rows = parsed
+                else:
+                    return JsonResponse({"error": "JSON must be a list or {\"rows\": [...] }"}, status=400)
+            else:
+                rows = _extract_rows_from_csv_text(body_text)
+
+        summary = ingest_event_rows(rows, dry_run=dry_run)
         return JsonResponse({"ok": True, "dry_run": dry_run, "summary": summary})
 
     except json.JSONDecodeError as error:

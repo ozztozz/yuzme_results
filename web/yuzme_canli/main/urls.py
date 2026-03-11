@@ -9,5 +9,6 @@ urlpatterns = [
     path('swimmers/', views.swimmer_results, name='swimmer_results'),
     path('clubs/', views.club_select, name='club_select'),
     path('api/create-event/', views.create_event_from_url, name='create_event_from_url'),
+    path('api/ingest-events/', views.ingest_events, name='ingest_events'),
     path('api/ingest-results/', views.ingest_results, name='ingest_results'),
 ]

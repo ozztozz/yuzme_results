@@ -15,6 +15,7 @@ class Event(models.Model):
 
 class Result(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    startlist_unique_name = models.CharField(max_length=128, unique=True, null=True, blank=True)
     event_order = models.IntegerField(default=0)
     swimmer_name = models.CharField(max_length=255)
     year_of_birth = models.IntegerField()
