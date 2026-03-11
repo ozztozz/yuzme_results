@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Etkinlik Ekle | Yuzme Canli{% endblock %}
+
+{% block content %}
+<section class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">URL ile Etkinlik Ekle</h1>
+    <p class="opacity-80">Etkinlik linkini girin. Sistem baslik, tarih ve konumu otomatik ceksin.</p>
+</section>
+
+<section class="grid gap-6 lg:grid-cols-3">
+    <div class="card bg-base-100 border border-base-200 shadow-sm lg:col-span-2">
+        <div class="card-body">
+            <form method="post" class="space-y-3">
+                {% csrf_token %}
+                <label for="id_url" class="label">
+                    <span class="label-text">Etkinlik URL</span>
+                </label>
+                <input
+                    id="id_url"
+                    name="url"
+                    type="url"
+                    required
+                    placeholder="https://canli.tyf.gov.tr/ankara/cs-1004952/"
+                    value="{{ submitted_url }}"
+                    class="input input-bordered w-full"
+                >
+                <button type="submit" class="btn" style="background:#ff7a59;border-color:#ff7a59;color:#fff;">Etkinligi Ekle</button>
+            </form>
+
+            {% if error %}
+            <div class="alert alert-error mt-4">
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            {% if event %}
+            <div class="alert {% if created %}alert-success{% else %}alert-info{% endif %} mt-4">
+                <span>
+                    {% if created %}
+                    Etkinlik eklendi.
+                    {% else %}
+                    Etkinlik zaten vardi, mevcut kayit getirildi.
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card bg-base-100 border border-base-200 shadow-sm lg:col-span-1">
+        <div class="card-body">
+            <h2 class="card-title text-lg">Sonuc</h2>
+            {% if event %}
+            <div class="space-y-2 text-sm">
+                <p><strong>ID:</strong> {{ event.id }}</p>
+                <p><strong>unique_name:</strong> {{ event.unique_name }}</p>
+                <p><strong>Baslik:</strong> {{ event.title }}</p>
+                <p><strong>Tarih:</strong> {{ event.date }}</p>
+                <p><strong>Konum:</strong> {{ event.location }}</p>
+                <a class="btn btn-sm btn-outline" href="/events/{{ event.id }}/">Detaya Git</a>
+            </div>
+            {% else %}
+            <p class="opacity-70">Henuz bir URL gonderilmedi.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from datetime import date, datetime
 from typing import Any
 
 from django.db import transaction
@@ -9,7 +8,6 @@ from django.db import transaction
 from .models import Event, Result
 
 
-DATE_RE = re.compile(r"\b(\d{1,2}\.\d{1,2}\.\d{4})\b")
 DISTANCE_RE = re.compile(r"^(?:(\d+)\s*[xX]\s*)?(\d+)\s*m$", re.IGNORECASE)
 
 
@@ -23,17 +21,9 @@ def _parse_int(value: Any, default: int = 0) -> int:
         return default
 
 
-def _parse_date(value: Any) -> date:
+def _parse_date(value: Any) -> str:
     text = str(value or "").strip()
-    match = DATE_RE.search(text)
-    if not match:
-        return date.today()
-
-    token = match.group(1)
-    try:
-        return datetime.strptime(token, "%d.%m.%Y").date()
-    except ValueError:
-        return date.today()
+    return text
 
 
 def _parse_distance(value: Any) -> int:
@@ -58,7 +48,7 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
         "result_updated": 0,
     }
 
-    event_keys: set[tuple[str, date, str]] = set()
+    event_keys: set[tuple[str, str, str]] = set()
     normalized_rows: list[dict[str, Any]] = []
 
     for row in rows:
@@ -102,7 +92,7 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
     if dry_run:
         return summary
 
-    event_cache: dict[tuple[str, date, str], Event] = {}
+    event_cache: dict[tuple[str, str, str], Event] = {}
 
     with transaction.atomic():
         for title, event_date, location in event_keys:

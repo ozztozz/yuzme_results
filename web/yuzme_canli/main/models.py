@@ -2,15 +2,16 @@ from django.db import models
 
 # Create your models here.
 class Event(models.Model):
+    unique_name = models.CharField(max_length=100, unique=True, default="")
     title = models.CharField(max_length=255)
-    date = models.DateField()
+    date = models.CharField(max_length=64)
     location = models.CharField(max_length=255)
 
     class Meta:
         unique_together = [("title", "date", "location")]
 
     def __str__(self):
-        return self.title
+        return self.title + " - " + self.date + " - " + self.location
 
 class Result(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

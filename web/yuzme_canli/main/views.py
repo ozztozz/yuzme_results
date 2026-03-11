@@ -8,6 +8,7 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
+from .event_creator import get_or_create_event_from_url
 from .ingest import ingest_rows
 from .models import Event, Result
 
@@ -156,6 +157,33 @@ def club_select(request: HttpRequest):
     return render(request, "club_select.html", context)
 
 
+def create_event_page(request: HttpRequest):
+    context: dict[str, object] = {
+        "submitted_url": "",
+        "created": None,
+        "event": None,
+        "scraped": None,
+        "error": "",
+    }
+
+    if request.method == "POST":
+        event_url = str(request.POST.get("url") or "").strip()
+        context["submitted_url"] = event_url
+
+        if not event_url:
+            context["error"] = "Lutfen etkinlik URL girin."
+        else:
+            try:
+                event, created, scraped = get_or_create_event_from_url(event_url)
+                context["created"] = created
+                context["event"] = event
+                context["scraped"] = scraped
+            except Exception as error:
+                context["error"] = str(error)
+
+    return render(request, "create_event.html", context)
+
+
 def _extract_rows_from_csv_text(csv_text: str) -> list[dict[str, str]]:
     reader = csv.DictReader(io.StringIO(csv_text))
     return list(reader)
@@ -207,6 +235,43 @@ def ingest_results(request: HttpRequest) -> JsonResponse:
         summary = ingest_rows(rows, dry_run=dry_run)
         return JsonResponse({"ok": True, "dry_run": dry_run, "summary": summary})
 
+    except json.JSONDecodeError as error:
+        return JsonResponse({"error": f"Invalid JSON: {error}"}, status=400)
+    except Exception as error:
+        return JsonResponse({"error": str(error)}, status=400)
+
+
+@csrf_exempt
+def create_event_from_url(request: HttpRequest) -> JsonResponse:
+    if request.method != "POST":
+        return JsonResponse({"error": "Only POST is allowed"}, status=405)
+
+    try:
+        payload: dict[str, object] = {}
+        if request.content_type and "application/json" in request.content_type.lower():
+            payload = json.loads(request.body.decode("utf-8-sig", errors="replace") or "{}")
+            if not isinstance(payload, dict):
+                return JsonResponse({"error": "JSON body must be an object"}, status=400)
+
+        event_url = str(payload.get("url") if payload else request.POST.get("url") or "").strip()
+        if not event_url:
+            return JsonResponse({"error": "url is required"}, status=400)
+
+        event, created, scraped = get_or_create_event_from_url(event_url)
+        return JsonResponse(
+            {
+                "ok": True,
+                "created": created,
+                "event": {
+                    "id": event.id,
+                    "unique_name": event.unique_name,
+                    "title": event.title,
+                    "date": event.date,
+                    "location": event.location,
+                },
+                "scraped": scraped,
+            }
+        )
     except json.JSONDecodeError as error:
         return JsonResponse({"error": f"Invalid JSON: {error}"}, status=400)
     except Exception as error:
