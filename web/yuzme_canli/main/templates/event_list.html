@@ -12,16 +12,19 @@
     <table class="table table-sm sm:table-md">
         <thead>
             <tr>
-                <th>ID</th>
+                
+                <th>Baslik</th>
                 <th>Yer</th>
+                <th>Tarih</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             {% for event in events %}
             <tr>
-                <td class="font-medium">{{ event.id }}</td>
+                <td class="font-medium">{{ event.title }}</td>
                 <td>{{ event.location }}</td>
+                <td>{{ event.date }}</td>
                 <td>
                     <a href="/events/{{ event.id }}/" class="btn btn-xs btn-outline">Ac</a>
                 </td>

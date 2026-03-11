@@ -19,6 +19,7 @@
                 <span class="badge badge-outline">{{ event.date }}</span>
                 <span class="badge" style="background:#b6e5df;color:#182028;border:none;">{{ event.location }}</span>
                 <span class="badge badge-ghost">{{ result_count }} satir</span>
+                <span class="badge badge-ghost">{{ non_empty_result_count }} Sonuc</span>
                 <span class="badge badge-outline">{{ group_count }} kategori</span>
             </div>
         </div>
@@ -29,20 +30,25 @@
     <table class="table table-zebra table-sm sm:table-md">
         <thead>
             <tr>
+                <th>Etkinlik Sırası</th>
                 <th>Cinsiyet</th>
                 <th>Stil</th>
                 <th>Mesafe</th>
-                <th>Satir</th>
+                <th>Sporcu Sayisi</th>
+                <th>Sonuc</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             {% for group in distinct_groups %}
             <tr>
+                <td>{{ group.event_order }}</td>
                 <td>{{ group.gender }}</td>
                 <td>{{ group.swimming_style }}</td>
                 <td>{{ group.distance }}m</td>
                 <td>{{ group.result_count }}</td>
+                <td>{{ group.non_empty_result_count }}</td>
+
                 <td>
                     <a
                         href="{% url 'event_selected_results' event.id %}?style={{ group.swimming_style|urlencode }}&gender={{ group.gender|urlencode }}&distance={{ group.distance }}"
@@ -52,7 +58,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="opacity-70">Bu etkinlik icin sonuc bulunamadi.</td>
+                <td colspan="7" class="opacity-70">Bu etkinlik icin sonuc bulunamadi.</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -4,6 +4,7 @@ import json
 import os
 
 from django.db.models import Count
+from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
@@ -32,11 +33,18 @@ def event_list(request):
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, id=event_id)
+    event_results = Result.objects.filter(event=event)
     distinct_groups = list(
-        Result.objects.filter(event=event)
-        .values("swimming_style", "gender", "distance")
-        .annotate(result_count=Count("id"))
-        .order_by("swimming_style", "gender", "distance")
+        event_results
+        .values("event_order", "swimming_style", "gender", "distance")
+        .annotate(
+            result_count=Count("id"),
+            non_empty_result_count=Count(
+                "id",
+                filter=Q(result__isnull=False) & ~Q(result__exact=""),
+            ),
+        )
+        .order_by("event_order", "gender", "distance")
     )
 
     context = {
@@ -44,6 +52,9 @@ def event_detail(request, event_id):
         "distinct_groups": distinct_groups,
         "group_count": len(distinct_groups),
         "result_count": sum(int(group["result_count"]) for group in distinct_groups),
+        "non_empty_result_count": sum(
+            int(group["non_empty_result_count"]) for group in distinct_groups
+        ),
     }
     return render(request, "event_detail.html", context)
 
@@ -68,7 +79,7 @@ def event_selected_results(request, event_id):
         swimming_style=selected_style,
         gender=selected_gender,
         distance=selected_distance,
-    ).order_by("seri_no", "lane", "swimmer_name")
+    ).order_by("rank","seri_no", "lane", "swimmer_name")
 
     context = {
         "event": event,
@@ -145,7 +156,7 @@ def club_select(request: HttpRequest):
         club_result_qs = Result.objects.filter(club=selected_club).select_related("event")
         club_result_count = club_result_qs.count()
         club_event_count = Event.objects.filter(result__club=selected_club).distinct().count()
-        latest_club_rows = club_result_qs.order_by("-event__date", "event__title", "swimming_style", "distance")[:50]
+        latest_club_rows = club_result_qs.order_by("-event__date", "event__title", "swimmer_name","swimming_style", "distance")[:50]
 
     context = {
         "clubs": clubs,
