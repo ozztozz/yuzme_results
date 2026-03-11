@@ -3,8 +3,7 @@ import io
 import json
 import os
 
-from django.db.models import Count
-from django.db.models import Q
+from django.db.models import Count, Max, Q
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
@@ -43,6 +42,7 @@ def event_detail(request, event_id):
                 "id",
                 filter=Q(result__isnull=False) & ~Q(result__exact=""),
             ),
+            max_seri_no=Max("seri_no"),
         )
         .order_by("event_order", "gender", "distance")
     )
