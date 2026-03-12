@@ -219,11 +219,46 @@ def _is_probable_swimmer_line(candidate: str) -> bool:
     if DISK_MARKER_RE.match(line) or TD_MARKER_RE.match(line):
         return False
 
+    lowered = line.lower()
+    if (
+        "kulüb" in lowered
+        or "kulub" in lowered
+        or "spor" in lowered
+        or "belediye" in lowered
+        or "kolej" in lowered
+        or "federasyon" in lowered
+        or "ferdi" == lowered
+    ):
+        return False
+
     cleaned = _clean_swimmer_name(line)
     if not cleaned:
         return False
     tokens = cleaned.split()
-    return len(tokens) >= 2
+    if len(tokens) < 2:
+        return False
+
+    # Most swimmer rows contain at least one all-caps surname token.
+    if any(re.fullmatch(r"[A-ZÇĞİÖŞÜ]{2,}", token) for token in tokens):
+        return True
+
+    # Fallback: title-case like "Arda Efe" should still be accepted.
+    return all(token[:1].isupper() for token in tokens[:2])
+
+
+def _looks_like_result_status_line(candidate: str) -> bool:
+    line = candidate.strip()
+    if not line:
+        return False
+    if any(ch.isdigit() for ch in line):
+        return False
+
+    upper = line.upper()
+    if line != upper:
+        return False
+
+    # Keep this narrow to avoid confusing all-caps names with status notes.
+    return any(token in upper for token in ("KATILIM", "BARAJ", "GECTI", "GEÇTİ", "DISK", "DQ"))
 
 
 def _rank_from_line(line: str, prev_line: str | None, next_line: str | None = None) -> int | None:
@@ -233,6 +268,10 @@ def _rank_from_line(line: str, prev_line: str | None, next_line: str | None = No
 
     rank = int(match.group(1))
     if rank < 1:
+        return None
+
+    # No-dot values above realistic participant count are usually points, not rank.
+    if "." not in line and rank > 120:
         return None
 
     # If OCR preserved trailing dot, this is a rank line.
@@ -249,6 +288,18 @@ def _rank_from_line(line: str, prev_line: str | None, next_line: str | None = No
         return None
 
     prev = prev_line.strip()
+
+    # OCR frequently drops trailing dots in rank lines (e.g. "2", "22").
+    # If the next visible line clearly looks like a swimmer name, prefer rank.
+    # Keep the "after time" case guarded to avoid reclassifying points like 665.
+    if "." not in line and next_line and _is_probable_swimmer_line(next_line):
+        if YEAR_RE.fullmatch(prev):
+            return None
+        if TIME_RE.search(prev):
+            return rank if rank <= 120 else None
+        if POINTS_RE.fullmatch(prev) or _looks_like_result_status_line(prev):
+            return rank
+        return rank
 
     # In noisy OCR, points can appear as plain numbers right after a time line,
     # followed by the next swimmer line. Prefer interpreting these as points.
@@ -1137,6 +1188,11 @@ def parse(text: str) -> dict[str, Any]:
                 if points_value is None and (time_value is not None or split_times) and POINTS_RE.fullmatch(candidate):
                     points_value = candidate
                     mark(line_no, "points_line")
+                    line_no += 1
+                    continue
+
+                if _looks_like_result_status_line(candidate):
+                    mark(line_no, "status_note")
                     line_no += 1
                     continue
 

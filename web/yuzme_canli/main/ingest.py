@@ -238,6 +238,10 @@ def _next_startlist_unique_name(
         return candidate
 
 
+def _row_has_any_key(row: dict[str, Any], keys: tuple[str, ...]) -> bool:
+    return any(key in row for key in keys)
+
+
 def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, int]:
     summary = {
         "events_seen": 0,
@@ -257,6 +261,8 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
     for index, row in enumerate(rows, start=1):
         if not isinstance(row, dict):
             raise ValueError(f"Row {index} must be an object")
+
+        raw_row = dict(row)
 
         event_obj = _resolve_event_for_result_row(row, event_cache_by_id, event_cache_by_unique_name)
         event_ids_seen.add(event_obj.id)
@@ -288,6 +294,7 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
                 "seed": str(row.get("seed") or "").strip(),
                 "result": result_value,
                 "rank": _parse_int(row.get("rank"), default=0),
+                "_raw_row": raw_row,
             }
         )
 
@@ -306,6 +313,7 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
         for row in normalized_rows:
             event_obj = row["event"]
             provided_startlist_key = str(row.get("startlist_unique_name") or "").strip() or None
+            raw_row = row.get("_raw_row") or {}
 
             lookup = {
                 "event": event_obj,
@@ -326,10 +334,55 @@ def ingest_rows(rows: list[dict[str, Any]], dry_run: bool = False) -> dict[str, 
             }
 
             if provided_startlist_key:
-                result_obj, created = Result.objects.update_or_create(
-                    startlist_unique_name=provided_startlist_key,
-                    defaults={**lookup, **defaults},
-                )
+                result_obj = Result.objects.filter(startlist_unique_name=provided_startlist_key).first()
+                created = result_obj is None
+
+                if result_obj is None:
+                    minimal_only = not _row_has_any_key(
+                        raw_row,
+                        ("year_of_birth", "gender", "swimming_style", "distance", "seri_no", "lane", "seed", "event_order"),
+                    )
+                    if minimal_only:
+                        raise ValueError(
+                            f"startlist_unique_name not found for minimal update: {provided_startlist_key}"
+                        )
+
+                    result_obj = Result.objects.create(
+                        startlist_unique_name=provided_startlist_key,
+                        **lookup,
+                        **defaults,
+                    )
+                else:
+                    result_obj.event = event_obj
+
+                    if _row_has_any_key(raw_row, ("swimmer_name", "name")):
+                        result_obj.swimmer_name = row["swimmer_name"]
+                    if _row_has_any_key(raw_row, ("year_of_birth",)):
+                        result_obj.year_of_birth = row["year_of_birth"]
+                    if _row_has_any_key(raw_row, ("club",)):
+                        result_obj.club = row["club"]
+                    if _row_has_any_key(raw_row, ("swimming_style",)):
+                        result_obj.swimming_style = row["swimming_style"]
+                    if _row_has_any_key(raw_row, ("distance",)):
+                        result_obj.distance = row["distance"]
+                    if _row_has_any_key(raw_row, ("seri_no",)):
+                        result_obj.seri_no = row["seri_no"]
+                    if _row_has_any_key(raw_row, ("lane",)):
+                        result_obj.lane = row["lane"]
+
+                    if _row_has_any_key(raw_row, ("event_order",)):
+                        result_obj.event_order = row["event_order"]
+                    if _row_has_any_key(raw_row, ("gender",)):
+                        result_obj.gender = row["gender"]
+                    if _row_has_any_key(raw_row, ("seed",)):
+                        result_obj.seed = row["seed"]
+                    if _row_has_any_key(raw_row, ("result", "time")):
+                        result_obj.result = row["result"]
+                    if _row_has_any_key(raw_row, ("rank",)):
+                        result_obj.rank = row["rank"]
+
+                    result_obj.save()
+
                 reserved_keys.add(provided_startlist_key)
             else:
                 result_obj = Result.objects.filter(**lookup).first()

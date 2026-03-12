@@ -305,3 +305,56 @@ class IngestResultsEventLinkTests(TestCase):
 		updated = Result.objects.get(startlist_unique_name="cs-1004952-000123")
 		self.assertEqual(updated.result, "00:33.90")
 		self.assertEqual(updated.rank, 1)
+
+	def test_ingest_results_minimal_update_preserves_startlist_fields(self):
+		event = Event.objects.create(
+			unique_name="cs-1004952",
+			title="10 Yas Yuzme Gelisim Musabakasi",
+			date="13. - 14.12.2025",
+			location="ANKARA (TUR)",
+		)
+		Result.objects.create(
+			event=event,
+			startlist_unique_name="cs-1004952-000124",
+			event_order=7,
+			swimmer_name="Swimmer Four",
+			year_of_birth=2014,
+			gender="Erkek",
+			club="Club A",
+			swimming_style="Serbest",
+			distance=50,
+			seri_no=2,
+			lane=3,
+			seed="00:36.00",
+			result="00:35.80",
+			rank=4,
+		)
+
+		payload = [
+			{
+				"event_unique_name": "cs-1004952",
+				"startlist_unique_name": "cs-1004952-000124",
+				"swimmer_name": "Swimmer Four",
+				"club": "Club A",
+				"result": "00:34.40",
+				"rank": 2,
+			},
+		]
+
+		response = self.client.post(
+			reverse("ingest_results"),
+			data=payload,
+			content_type="application/json",
+		)
+
+		self.assertEqual(response.status_code, 200)
+		updated = Result.objects.get(startlist_unique_name="cs-1004952-000124")
+		self.assertEqual(updated.result, "00:34.40")
+		self.assertEqual(updated.rank, 2)
+		self.assertEqual(updated.event_order, 7)
+		self.assertEqual(updated.gender, "Erkek")
+		self.assertEqual(updated.swimming_style, "Serbest")
+		self.assertEqual(updated.distance, 50)
+		self.assertEqual(updated.seri_no, 2)
+		self.assertEqual(updated.lane, 3)
+		self.assertEqual(updated.seed, "00:36.00")
