@@ -21,6 +21,9 @@ YEAR_RE = re.compile(r"^\d{2}$")
 # Time pattern that also works when OCR glues text and time together (e.g. Ortaoku28.45)
 TIME_RE = re.compile(r"(?<!\d)\d{1,2}[:.]\d{2}(?:[:.]\d{2})?(?!\d)")
 PURE_TIME_RE = re.compile(r"^\d{1,2}[:\-\.]\d{2}(?:[:\-\.]\d{2})?$")
+# OCR sometimes drops the separator between minutes (2 digits) and seconds,
+# producing tokens like "1213.36" instead of "12:13.36".
+COMPACT_SPLIT_TIME_RE = re.compile(r"^\d{3,4}[:\-\.]\d{2}$")
 POINTS_RE = re.compile(r"^\d{1,4}$")
 REGISTERED_RE = re.compile(r"^Registered\b", re.IGNORECASE)
 SAYFA_RE = re.compile(r"^Sayfa\b", re.IGNORECASE)
@@ -337,6 +340,11 @@ def _normalize_time_token(raw: str) -> str:
     if len(chunks) >= 3:
         return f"{int(chunks[0])}:{chunks[1].zfill(2)}.{chunks[2].zfill(2)}"
     if len(chunks) == 2:
+        # Compact OCR artefact: first chunk encodes MM+SS, e.g. "1213" → 12 min 13 sec.
+        if len(chunks[0]) >= 3:
+            mm = int(chunks[0][:-2])
+            ss = chunks[0][-2:]
+            return f"{mm}:{ss}.{chunks[1].zfill(2)}"
         return f"{int(chunks[0])}.{chunks[1].zfill(2)}"
     return token
 
@@ -534,6 +542,11 @@ def _extract_total_time_and_points(candidate: str, prefer_long_time: bool) -> tu
 
 def _is_split_time_line(candidate: str) -> bool:
     return bool(PURE_TIME_RE.fullmatch(candidate.strip()))
+
+
+def _is_compact_split_time(candidate: str) -> bool:
+    """Detect OCR artefacts like '1213.36' (→ 12:13.36) where the colon was dropped."""
+    return bool(COMPACT_SPLIT_TIME_RE.fullmatch(candidate.strip()))
 
 
 def _extract_metadata(lines: list[str]) -> tuple[dict[str, str | None], set[int], set[str]]:
@@ -1132,6 +1145,9 @@ def parse(text: str) -> dict[str, Any]:
                                 or EVENT_START_RE.match(after_points_text)
                                 or DISK_MARKER_RE.match(after_points_text)
                                 or TD_MARKER_RE.match(after_points_text)
+                                # Split times after points → current time IS the total time.
+                                or PURE_TIME_RE.fullmatch(after_points_text)
+                                or _is_compact_split_time(after_points_text)
                             )
 
                         if after_points_no is None or after_points_is_boundary:
@@ -1160,11 +1176,20 @@ def parse(text: str) -> dict[str, Any]:
                         )
                     )
 
-                    if not next_is_record_boundary:
+                    # If total time is already known, any remaining pure-time line is a
+                    # split regardless of what follows — skip the next-boundary guard.
+                    if not next_is_record_boundary or time_value is not None:
                         split_times.append(_normalize_time_token(candidate))
                         mark(line_no, "split_time_line")
                         line_no += 1
                         continue
+
+                # Compact split time artefact (e.g. "1213.36") not caught by PURE_TIME_RE.
+                if _is_compact_split_time(candidate) and expected_splits and len(split_times) < expected_splits:
+                    split_times.append(_normalize_time_token(candidate))
+                    mark(line_no, "split_time_line")
+                    line_no += 1
+                    continue
 
                 if time_value is None:
                     total_time, extracted_points, cleaned_candidate = _extract_total_time_and_points(candidate, prefer_long_time)

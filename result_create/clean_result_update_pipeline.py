@@ -48,8 +48,14 @@ STATE_DIR = Path("results")
 LOCAL_WEB_BASE_URL = "http://127.0.0.1:8000"
 REMOTE_WEB_BASE_URL = os.getenv("YUZME_WEB_BASE_URL", "https://ozztozz.pythonanywhere.com/").rstrip("/")
 INGEST_TOKEN = os.getenv("YUZME_INGEST_TOKEN", "").strip() or None
+RESULT_OCR_BACKEND = os.getenv("YUZME_RESULT_OCR_BACKEND", "easyocr").strip().lower()
+RESULT_OCR_DPI = int(os.getenv("YUZME_RESULT_OCR_DPI", "600"))
+RESULT_OCR_SCALE = float(os.getenv("YUZME_RESULT_OCR_SCALE", "3.0"))
+RESULT_OCR_FORCE_REFRESH = os.getenv("YUZME_FORCE_REOCR", "0").strip() == "1"
+RESULT_PARSER_DEFAULT_VERSION = os.getenv("YUZME_RESULT_PARSER_DEFAULT", "11.83565").strip()
 TEMP_RESULT_TEXT_DIR = Path("results/_tmp_result_text_clean_update")
 CONTROL_TEXT_DIR = Path("results/_tmp_extracted_text_clean_update")
+DEBUG_DIR = Path("results/_tmp_match_debug")
 PARSERS_DIR = Path(__file__).parent / "parsers"
 
 
@@ -280,6 +286,16 @@ def _save_control_text(pdf_path: Path, category: str, source: str, text: str) ->
 
 
 def extract_text_from_result_pdf_with_fallback(pdf_path: Path) -> str:
+    # Reuse previously saved control text unless explicitly forced to regenerate OCR.
+    if not RESULT_OCR_FORCE_REFRESH:
+        cached_ocr = CONTROL_TEXT_DIR / f"result_{_safe_name(pdf_path.stem)}_ocr.txt"
+        if cached_ocr.exists():
+            return cached_ocr.read_text(encoding="utf-8").strip()
+
+        cached_native = CONTROL_TEXT_DIR / f"result_{_safe_name(pdf_path.stem)}_native.txt"
+        if cached_native.exists():
+            return cached_native.read_text(encoding="utf-8").strip()
+
     try:
         text = extract_text_from_pdf(pdf_path)
         _save_control_text(pdf_path, category="result", source="native", text=text)
@@ -295,9 +311,9 @@ def extract_text_from_result_pdf_with_fallback(pdf_path: Path) -> str:
             ocr_language="tur+eng",
             tessdata=tessdata,
             needs_ocr=True,
-            ocr_backend="easyocr",
-            ocr_dpi=300,
-            ocr_scale=3.0,
+            ocr_backend=RESULT_OCR_BACKEND,
+            ocr_dpi=RESULT_OCR_DPI,
+            ocr_scale=RESULT_OCR_SCALE,
         )
 
         ocr_text = temp_txt.read_text(encoding="utf-8").strip()
@@ -342,9 +358,16 @@ def parse_startlist_rows(startlist_pdfs: list[Path], event_unique_name: str) -> 
     return [row for row in rows if row.get("swimmer_name")]
 
 
-def parse_result_records(result_pdf: Path) -> list[dict[str, Any]]:
+def parse_result_records(result_pdf: Path) -> tuple[list[dict[str, Any]], str]:
     text = extract_text_from_result_pdf_with_fallback(result_pdf)
-    version = detect_result_version(text)
+    try:
+        version = detect_result_version(text)
+    except ValueError:
+        version = RESULT_PARSER_DEFAULT_VERSION
+        print(
+            f"{result_pdf.name}: version marker missing in OCR text, "
+            f"using default parser baseline {version}"
+        )
     parser_version, parser = load_result_parser_with_fallback(version)
     if parser_version != version:
         print(f"{result_pdf.name}: parsed with fallback parser {parser_version}")
@@ -382,7 +405,7 @@ def parse_result_records(result_pdf: Path) -> list[dict[str, Any]]:
             }
         )
 
-    return _drop_single_token_ocr_duplicates(parsed_records)
+    return _drop_single_token_ocr_duplicates(parsed_records), text
 
 
 def build_startlist_index(rows: list[dict[str, Any]]) -> dict[str, dict[tuple[str, str], list[int]]]:
@@ -555,6 +578,12 @@ def _is_likely_consumed_duplicate(
     return False
 
 
+def _save_debug_text(stem: str, category: str, lines: list[str]) -> None:
+    DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+    destination = DEBUG_DIR / f"{category}_{_safe_name(stem)}.txt"
+    destination.write_text("\n".join(lines), encoding="utf-8")
+
+
 def match_results_to_startlist_rows(
     startlist_rows: list[dict[str, Any]],
     result_pdfs: list[Path],
@@ -585,12 +614,16 @@ def match_results_to_startlist_rows(
         list_row_indexes = rows_by_list_no.get(list_no, [])
 
         try:
-            parsed_records = parse_result_records(result_pdf)
+            parsed_records, raw_text = parse_result_records(result_pdf)
         except Exception as error:
             stats["result_files_skipped_parse_error"] += 1
             print(f"Skipped result file {result_pdf.name}: {error}")
             continue
 
+        # Save raw extracted text for this result file.
+        _save_debug_text(result_pdf.stem, "unparsed_result", [raw_text])
+
+        unmatched_result_lines: list[str] = []
         for record in parsed_records:
             stats["result_records_seen"] += 1
             row_index = find_matching_row_index(
@@ -604,6 +637,9 @@ def match_results_to_startlist_rows(
                 if _is_likely_consumed_duplicate(record, list_row_indexes, startlist_rows, used_rows):
                     continue
                 stats["result_records_unmatched"] += 1
+                unmatched_result_lines.append(
+                    f"{record['rank']:>3}  {record['swimmer_name']}  {record['club']}  {record['result']}"
+                )
                 continue
 
             used_rows.add(row_index)
@@ -613,6 +649,22 @@ def match_results_to_startlist_rows(
             row["result"] = record["result"]
             row["rank"] = record["rank"]
             matched_rows[row_index] = row
+
+        if unmatched_result_lines:
+            _save_debug_text(result_pdf.stem, "unmatched_result", unmatched_result_lines)
+
+    # Save unmatched startlist rows grouped by their source list file stem.
+    unmatched_start_by_stem: dict[str, list[str]] = {}
+    for row_index, row in enumerate(startlist_rows):
+        if row_index in used_rows:
+            continue
+        list_no = str(row.get("_list_no") or "")
+        stem = f"startlist_{list_no}" if list_no else "startlist_unknown"
+        unmatched_start_by_stem.setdefault(stem, []).append(
+            f"{row['swimmer_name']}  {row['club']}"
+        )
+    for stem, lines in unmatched_start_by_stem.items():
+        _save_debug_text(stem, "unmatched_start", lines)
 
     ordered_rows = [matched_rows[row_index] for row_index in sorted(matched_rows.keys())]
     return ordered_rows, stats
@@ -691,7 +743,14 @@ def run_pipeline(event_url: str) -> None:
         print("No new result files detected on event link")
         return
 
-    startlist_rows = parse_startlist_rows(startlist_pdfs, event_unique_name=event_unique_name)
+    needed_list_nos = {extract_list_number(p) for p in new_result_pdfs} - {None}
+    relevant_startlist_pdfs = [p for p in startlist_pdfs if extract_list_number(p) in needed_list_nos]
+    if not relevant_startlist_pdfs:
+        raise RuntimeError(
+            f"No startlist PDFs found matching result list numbers: {sorted(needed_list_nos)}"
+        )
+
+    startlist_rows = parse_startlist_rows(relevant_startlist_pdfs, event_unique_name=event_unique_name)
     if not startlist_rows:
         raise RuntimeError("Startlist parsing produced no rows")
 
@@ -740,9 +799,36 @@ def run_pipeline(event_url: str) -> None:
 
 
 def main() -> None:
+    global RESULT_OCR_DPI, RESULT_OCR_SCALE, RESULT_OCR_FORCE_REFRESH
+    
     parser = argparse.ArgumentParser(description="Clean result list parser and updater (single input: event URL)")
     parser.add_argument("event_url", type=str, help="Event page URL")
+    parser.add_argument(
+        "--ocr-dpi",
+        type=int,
+        default=None,
+        help="OCR DPI for fitz/Tesseract (default: 600, min: 300). Higher = better quality but slower.",
+    )
+    parser.add_argument(
+        "--ocr-scale",
+        type=float,
+        default=None,
+        help="OCR scale for easyocr/paddleocr (default: 3.0, range 1.0-5.0). Higher = better quality but slower.",
+    )
+    parser.add_argument(
+        "--force-reocr",
+        action="store_true",
+        help="Force re-OCR all PDFs even if cached text exists. Use when improving OCR settings.",
+    )
     args = parser.parse_args()
+
+    # Apply CLI overrides to module globals if provided.
+    if args.ocr_dpi is not None:
+        RESULT_OCR_DPI = args.ocr_dpi
+    if args.ocr_scale is not None:
+        RESULT_OCR_SCALE = args.ocr_scale
+    if args.force_reocr:
+        RESULT_OCR_FORCE_REFRESH = True
 
     try:
         run_pipeline(args.event_url)
