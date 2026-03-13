@@ -1,7 +1,7 @@
 --- Page 1 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 1
+13.03.2026 13:33 - Sayfa 1
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 13
@@ -180,7 +180,7 @@ Kulvar Spor Kulübü
 --- Page 2 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 2
+13.03.2026 13:33 - Sayfa 2
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 13, Bayanlar, 50m Serbest
@@ -310,7 +310,7 @@ Keçiören Belediyesi Bağlum Spor Kulübü
 42.77
 7 Birsu Asya PÖRKLÜ
 11
-Ferdi
+Kulvar Spor Kulübü
 42.87
 8 Yaren BAYRAKTAR
 11
@@ -353,7 +353,7 @@ NT
 --- Page 3 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 3
+13.03.2026 13:33 - Sayfa 3
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 13, Bayanlar, 50m Serbest

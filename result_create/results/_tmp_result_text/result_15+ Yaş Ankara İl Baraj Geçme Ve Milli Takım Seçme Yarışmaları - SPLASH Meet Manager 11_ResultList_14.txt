@@ -235,7 +235,7 @@ Gordion Spor Kuldba
 491
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.08.2028 15:32
+13.08.2028 19:33
 Sayfa
 1
 
@@ -577,7 +577,7 @@ Aykon Spor Kullibit
 330
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.08.2028 15:32
+13.08.2028 19:33
 Sayla 2
 
 --- Page 3 ---
@@ -915,8 +915,8 @@ Hacettepeliler Spor Kuldbi
 8B
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.08.2028 15:32
-Sayia 3
+13.08.2028 19:33
+Sayla 3
 
 --- Page 4 ---
 15+ Yag Ankara il Baraj Gecme Ve Milli Takim Segme Yarismalart
@@ -963,5 +963,5 @@ SW 4.4 - Yuzicd gikig sinyalinden énce hareketsizligini bozdugundan (veya gikis
 (Zaman: 15:30)
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.08.2028 15:32
+13.08.2028 13:33
 Sayfa 4

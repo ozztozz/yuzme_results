@@ -36,10 +36,12 @@ Orta Dogu Teknik Universitesi Spor k2:18.56
 1:04.63
 1:13.93
 KATILIM BARAJINI GEGTI
-4. Cem Eren SELMANPAKOGLU 11 — Vamos Spor Kuldbia
+4,
+CemEten SELMANPAKOGLU 11
+Vamos Spor Kuldba
 2:19.53
 545
-1:07.56
+4:07.56
 1:11.97
 KATILIM BARAJINI GEGTI
 5.
@@ -160,6 +162,6 @@ Ferdi
 1:48.04
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.03 2026 9:52-
+13.08.2028 19:33
 Sayfa
 1

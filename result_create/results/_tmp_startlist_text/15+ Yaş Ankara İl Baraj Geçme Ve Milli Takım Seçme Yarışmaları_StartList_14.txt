@@ -1,7 +1,7 @@
 --- Page 1 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 1
+13.03.2026 13:33 - Sayfa 1
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 14
@@ -180,7 +180,7 @@ Ankara Gsm Spor Kulübü
 --- Page 2 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 2
+13.03.2026 13:33 - Sayfa 2
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 14, Erkekler, 50m Serbest
@@ -353,7 +353,7 @@ Vamos Spor Kulübü
 --- Page 3 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 3
+13.03.2026 13:33 - Sayfa 3
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 14, Erkekler, 50m Serbest
@@ -526,7 +526,7 @@ Altın Oran Spor Kulübü
 --- Page 4 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 4
+13.03.2026 13:33 - Sayfa 4
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 14, Erkekler, 50m Serbest
@@ -699,7 +699,7 @@ NT
 --- Page 5 ---
 Splash Meet Manager, 11.83921
 Registered to Turkiye Yüzme Federasyonu
-12.03.2026 9:24 - Sayfa 5
+13.03.2026 13:33 - Sayfa 5
 15+ Yaş Ankara İl Baraj Geçme Ve Milli Takım Seçme Yarışmaları
 ANKARA, 12. - 13.3.2026
 Yarış 14, Erkekler, 50m Serbest

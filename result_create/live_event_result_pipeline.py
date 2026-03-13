@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import re
 import subprocess
@@ -16,6 +17,7 @@ import parse_all_resultlists_to_csv as fitz_parser
 import parse_all_resultlists_to_csv_doctr as doctr_parser
 import parse_all_resultlists_to_csv_surya as surya_parser
 import parse_all_startlists_to_csv as startlist_parser
+import clean_result_update_pipeline as clean_parser
 import scrape_results
 from read_ocr import detect_tessdata_path
 
@@ -300,6 +302,15 @@ def count_non_empty(rows: list[dict[str, Any]], key: str) -> int:
     return sum(1 for row in rows if str(row.get(key) or "").strip())
 
 
+def file_signature(path: Path) -> str:
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return ""
+    digest = hashlib.sha1(data).hexdigest()
+    return f"{len(data)}:{digest}"
+
+
 def compute_score(rows: list[dict[str, Any]]) -> tuple[int, int, int]:
     time_count = count_non_empty(rows, "time")
     points_count = count_non_empty(rows, "points")
@@ -374,6 +385,32 @@ def parse_with_surya(result_pdf: Path, event_title: str, context: RuntimeContext
     return ParseAttempt("surya", rows, score, time_count, points_count)
 
 
+def parse_with_clean(result_pdf: Path, event_title: str, context: RuntimeContext) -> ParseAttempt:
+    parsed_records, _ = clean_parser.parse_result_records(result_pdf)
+
+    rows: list[dict[str, Any]] = []
+    for record in parsed_records:
+        rows.append(
+            {
+                "event_no": None,
+                "event_name": event_title,
+                "swimmer_name": record.get("swimmer_name"),
+                "birth_year": None,
+                "club": record.get("club"),
+                "time": record.get("result"),
+                "rank": record.get("rank"),
+                "points": None,
+                "status": None,
+                "special_type": None,
+                "rule": None,
+                "note_time": None,
+            }
+        )
+
+    score, time_count, points_count = compute_score(rows)
+    return ParseAttempt("clean", rows, score, time_count, points_count)
+
+
 def pick_parser_order(base_order: list[str], state: dict[str, Any], dynamic_order: bool) -> list[str]:
     if not dynamic_order:
         return base_order
@@ -438,7 +475,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Live event pipeline: parse startlists first, then poll for new results and parse each new "
-            "ResultList with ordered fitz/doctr/surya fallback."
+            "ResultList with ordered fitz/doctr/surya/clean fallback."
         )
     )
     parser.add_argument("--event-url", type=str, required=True, help="Event page URL")
@@ -471,7 +508,7 @@ def main() -> None:
     parser.add_argument(
         "--parser-order",
         type=str,
-        default="fitz,doctr,surya",
+        default="fitz,doctr,surya,clean",
         help="Ordered parser fallback list, comma separated",
     )
     parser.add_argument(
@@ -513,7 +550,7 @@ def main() -> None:
 
     workspace_root = Path(__file__).parent
     parser_order = [item.strip().lower() for item in args.parser_order.split(",") if item.strip()]
-    allowed_backends = {"fitz", "doctr", "surya"}
+    allowed_backends = {"fitz", "doctr", "surya", "clean"}
     invalid = [name for name in parser_order if name not in allowed_backends]
     if invalid:
         raise ValueError(f"Unsupported parser names in --parser-order: {invalid}")
@@ -542,6 +579,14 @@ def main() -> None:
     parsed_result_pdfs: set[str] = set(str(item) for item in state.get("parsed_result_pdfs", []))
     parsed_result_pdfs.update(read_existing_parsed_pdfs(args.result_output_csv))
     parsed_result_pdfs.update(read_existing_parsed_pdfs_jsonl(args.result_output_jsonl))
+    failed_result_signatures_raw = state.get("failed_result_signatures", {})
+    failed_result_signatures: dict[str, str] = {}
+    if isinstance(failed_result_signatures_raw, dict):
+        failed_result_signatures = {
+            str(key): str(value)
+            for key, value in failed_result_signatures_raw.items()
+            if str(key).strip() and str(value).strip()
+        }
 
     context = RuntimeContext(
         workspace_root=workspace_root,
@@ -555,6 +600,7 @@ def main() -> None:
         "fitz": parse_with_fitz,
         "doctr": parse_with_doctr,
         "surya": parse_with_surya,
+        "clean": parse_with_clean,
     }
 
     poll_index = int(state.get("poll_count", 0))
@@ -573,8 +619,19 @@ def main() -> None:
                 print(f"Linked startlist rows to result PDFs: {linked_count}")
 
         all_result_pdfs = fitz_parser.discover_result_pdfs(args.input_dir, event_title)
-        new_result_pdfs = [pdf for pdf in all_result_pdfs if str(pdf) not in parsed_result_pdfs]
+        candidate_result_pdfs = [pdf for pdf in all_result_pdfs if str(pdf) not in parsed_result_pdfs]
+        new_result_pdfs: list[Path] = []
+        skipped_unchanged_failures = 0
+        for pdf in candidate_result_pdfs:
+            signature = file_signature(pdf)
+            if signature and failed_result_signatures.get(str(pdf)) == signature:
+                skipped_unchanged_failures += 1
+                continue
+            new_result_pdfs.append(pdf)
+
         print(f"New result PDFs detected: {len(new_result_pdfs)}")
+        if skipped_unchanged_failures:
+            print(f"Skipped unchanged failed result PDFs: {skipped_unchanged_failures}")
         parsed_new_result_count = 0
 
         for result_pdf in new_result_pdfs:
@@ -605,6 +662,9 @@ def main() -> None:
                     print(f"- {backend}: failed ({error})")
 
             if selected_attempt is None:
+                signature = file_signature(result_pdf)
+                if signature:
+                    failed_result_signatures[str(result_pdf)] = signature
                 if errors:
                     print(f"Failed {result_pdf.name}. Errors: {' | '.join(errors)}")
                 else:
@@ -642,6 +702,7 @@ def main() -> None:
                     )
 
             parsed_result_pdfs.add(str(result_pdf))
+            failed_result_signatures.pop(str(result_pdf), None)
             parsed_new_result_count += 1
             print(
                 f"Selected backend for {result_pdf.name}: {selected_attempt.backend} "
@@ -653,6 +714,7 @@ def main() -> None:
             print(f"Startlist base CSV updated -> {args.startlist_output_csv}")
 
         state["parsed_result_pdfs"] = sorted(parsed_result_pdfs)
+        state["failed_result_signatures"] = failed_result_signatures
         state["poll_count"] = poll_index
         save_state(state_path, state)
 

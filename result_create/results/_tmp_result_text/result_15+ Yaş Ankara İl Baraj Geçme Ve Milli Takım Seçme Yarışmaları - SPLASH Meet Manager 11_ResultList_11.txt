@@ -36,7 +36,7 @@ Orla Dogu Teknik Universitesi SporKt:26.21
 4140
 44.81
 4.
-Eflin AYDIN
+Ein AYDIN
 11
 Baskent Çankaya SporKuldbd.
 1:28.93
@@ -46,11 +46,11 @@ Baskent Çankaya SporKuldbd.
 5.
 Hanzade DOGAN
 11
-Ted Ankara Kolejller Spor Kull
+Ted Ankara Kolejiler Spor Kuldbd
 1:29.56
 367
-4174
-47.82
+4176
+4782
 6.
 Elif Mina ERCAN
 41
@@ -107,8 +107,8 @@ Zafer Koleji Spor Kulaba
 57.59
 43.
 Birsu Asya PORKLO
-11
-Zafer Koleji Spor Kulaba
+41
+Kulvar Spor Kulaba
 1:52.15
 186
 53.56
@@ -116,7 +116,7 @@ Zafer Koleji Spor Kulaba
 14,
 Elif Seray PINARBAS!
 11
-Gokkugagi Yzme SporKuldbo
+Gokkugagi Yozme SporKuldbo
 1:53.28
 181
 5274
@@ -131,4 +131,6 @@ Pars Su Sportani Spor Kuldbo
 1:00.88
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-12.08.2028 14:39- Sayfa 1
+13.08.2028 19:33
+Sayfa
+1

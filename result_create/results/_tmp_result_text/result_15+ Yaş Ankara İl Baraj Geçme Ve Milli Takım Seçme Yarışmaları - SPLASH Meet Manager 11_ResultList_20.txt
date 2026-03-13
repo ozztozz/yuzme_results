@@ -89,7 +89,8 @@ KATILIM BARAJINI GEGTI
 Kerem Deniz KARABAY
 10
 Baskent Çankaya SporKuldbo
-«2:04.02 556
+«2:04.02
+556
 58.91
 1:05.11
 41.
@@ -354,7 +355,9 @@ Kulvar Spor Kulaba
 220
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-13.08.2028 10:08- Sayfa 1
+13.08.2028 19:33
+Sayfa
+1
 
 --- Page 2 ---
 15+ Yag Ankara il Baraj Gecme Ve Milli Takim Segme Yarismalart
@@ -383,5 +386,5 @@ Aykon Spor Kulaba
 1:39.26
 Splash Met Manager, 1.83821
 Fegistered to Turkiye Yurme Federasyonu
-13.08.2026 10:08
-Sayia 2
+13.08.2028 19:33
+Sayla 2
