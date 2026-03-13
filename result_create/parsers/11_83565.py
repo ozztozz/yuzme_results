@@ -17,6 +17,7 @@ HEADER_YB_RE = re.compile(r"^YB$", re.IGNORECASE)
 HEADER_ZAMAN_RE = re.compile(r"^Zaman\s+\w+$", re.IGNORECASE)
 RANK_RE = re.compile(r"^(\d{1,3})\s*\.?\s*$")
 INLINE_RANK_RE = re.compile(r"^(\d{1,3})\.\s+(.+)$")
+INLINE_RANK_NO_DOT_RE = re.compile(r"^(\d{1,3})\s+(.+)$")
 YEAR_RE = re.compile(r"^\d{2}$")
 # Time pattern that also works when OCR glues text and time together (e.g. Ortaoku28.45)
 TIME_RE = re.compile(r"(?<!\d)\d{1,2}[:.]\d{2}(?:[:.]\d{2})?(?!\d)")
@@ -73,6 +74,8 @@ def _clean_club_name(value: str | None) -> str | None:
     cleaned = re.sub(r"\((?:Tk|Fd)\)", "", normalized, flags=re.IGNORECASE)
     cleaned = cleaned.replace('"', "")
     cleaned = cleaned.replace(",", "")
+    cleaned = re.sub(r"(?i)\bKul[üu]b\d\b", "Kulüb", cleaned)
+    cleaned = re.sub(r"\b([A-Za-zÇĞİÖŞÜçğıöşü]{2,})\d\b", r"\1", cleaned)
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned or None
 
@@ -292,6 +295,11 @@ def _rank_from_line(line: str, prev_line: str | None, next_line: str | None = No
 
     prev = prev_line.strip()
 
+    # A two-digit line right after a swimmer line is typically birth year,
+    # not rank (e.g. "Ibrahim Eren ARIKAN" -> "06").
+    if YEAR_RE.fullmatch(line) and _is_probable_swimmer_line(prev):
+        return None
+
     # OCR frequently drops trailing dots in rank lines (e.g. "2", "22").
     # If the next visible line clearly looks like a swimmer name, prefer rank.
     # Keep the "after time" case guarded to avoid reclassifying points like 665.
@@ -319,6 +327,38 @@ def _rank_from_line(line: str, prev_line: str | None, next_line: str | None = No
         return rank
 
     return None
+
+
+def _inline_rank_from_line(line: str) -> tuple[int, str] | None:
+    candidate = line.strip()
+    if not candidate:
+        return None
+
+    dotted_match = INLINE_RANK_RE.match(candidate)
+    if dotted_match:
+        rank = int(dotted_match.group(1))
+        inline_name = _clean_line(dotted_match.group(2))
+        if rank < 1 or rank > 120 or not inline_name:
+            return None
+        return rank, inline_name
+
+    # OCR can drop the trailing dot: "72 Ruzgar CEYLAN".
+    nodot_match = INLINE_RANK_NO_DOT_RE.match(candidate)
+    if not nodot_match:
+        return None
+
+    rank = int(nodot_match.group(1))
+    inline_name = _clean_line(nodot_match.group(2))
+    if rank < 1 or rank > 120 or not inline_name:
+        return None
+
+    if TIME_RE.search(inline_name) or YEAR_RE.fullmatch(inline_name) or POINTS_RE.fullmatch(inline_name):
+        return None
+
+    if not _is_probable_swimmer_line(inline_name):
+        return None
+
+    return rank, inline_name
 
 
 def _extract_time_parts(candidate: str) -> tuple[str | None, str, str]:
@@ -512,6 +552,9 @@ def _extract_total_time_and_points(candidate: str, prefer_long_time: bool) -> tu
     pattern = r"\d{1,2}[:.]\d{2}[:.]\d{2}" if prefer_long_time else r"\d{1,2}[:.]\d{2}(?:[:.]\d{2})?"
     match = re.search(pattern, text)
     if not match:
+        compact_time = re.fullmatch(r"\s*(\d{2})(\d{2})\s*", text)
+        if compact_time:
+            return f"{compact_time.group(1)}.{compact_time.group(2)}", None, ""
         return None, None, candidate
 
     raw_time = match.group(0)
@@ -960,10 +1003,10 @@ def parse(text: str) -> dict[str, Any]:
         if rank is None:
             rank = _rank_from_line(line, _prev_non_empty(lines, line_no), _next_non_empty(lines, line_no))
             if rank is None:
-                inline_rank_match = INLINE_RANK_RE.match(line)
-                if inline_rank_match:
-                    rank = int(inline_rank_match.group(1))
-                    inline_candidate_for_name = _clean_line(inline_rank_match.group(2))
+                inline_rank = _inline_rank_from_line(line)
+                if inline_rank:
+                    rank = inline_rank[0]
+                    inline_candidate_for_name = inline_rank[1]
 
         # Surya OCR can also emit trailing-rank shape:
         # swimmer_name -> year -> club -> time -> rank -> points
@@ -1084,7 +1127,7 @@ def parse(text: str) -> dict[str, Any]:
                     break
 
                 # Avoid swallowing next athlete rows written as "5. (Fd) ...".
-                if INLINE_RANK_RE.match(candidate) and (swimmer_name or time_value or club_fragments or split_times):
+                if _inline_rank_from_line(candidate) and (swimmer_name or time_value or club_fragments or split_times):
                     break
 
                 next_rank = _rank_from_line(candidate, _prev_non_empty(lines, line_no), _next_non_empty(lines, line_no))
@@ -1138,7 +1181,7 @@ def parse(text: str) -> dict[str, Any]:
                                 )
                                 is not None
                                 or _is_probable_swimmer_line(after_points_text)
-                                or INLINE_RANK_RE.match(after_points_text)
+                                or _inline_rank_from_line(after_points_text) is not None
                                 or PAGE_MARKER_RE.match(after_points_text)
                                 or SPLASH_VERSION_RE.match(after_points_text)
                                 or EVENT_SINGLE_LINE_RE.match(after_points_text)
@@ -1172,6 +1215,7 @@ def parse(text: str) -> dict[str, Any]:
                                 _next_non_empty(lines, line_no + 1),
                             )
                             is not None
+                            or _inline_rank_from_line(next_non_empty_candidate) is not None
                             or _is_probable_swimmer_line(next_non_empty_candidate)
                         )
                     )

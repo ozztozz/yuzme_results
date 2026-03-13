@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import subprocess
 import sys
 import time
@@ -174,6 +175,20 @@ def write_startlist_rows(startlist_csv: Path, rows: list[dict[str, Any]]) -> Non
 
 
 def ensure_startlist_result_pdf_links(rows: list[dict[str, Any]]) -> int:
+    def _build_result_pdf_from_source(source_pdf_text: str) -> str | None:
+        source_text = str(source_pdf_text or "").strip()
+        if not source_text:
+            return None
+
+        match = re.search(r"(?i)startlist_(\d+)\.pdf$", source_text)
+        if not match:
+            return None
+
+        list_no = match.group(1)
+        candidate = re.sub(r"(?i)startlists", "results", source_text)
+        candidate = re.sub(r"(?i)startlist_\d+\.pdf$", f"ResultList_{list_no}.pdf", candidate)
+        return candidate
+
     linked = 0
     for row in rows:
         existing = str(row.get("result_pdf") or "").strip()
@@ -185,17 +200,27 @@ def ensure_startlist_result_pdf_links(rows: list[dict[str, Any]]) -> int:
             continue
 
         candidate = startlist_parser.corresponding_result_pdf(Path(source_pdf))
-        if candidate is None:
+        if candidate is not None:
+            row["result_pdf"] = str(candidate)
+            linked += 1
             continue
 
-        row["result_pdf"] = str(candidate)
+        # Fallback for OCR/encoding-mangled paths: derive by list number shape only.
+        fallback_candidate = _build_result_pdf_from_source(source_pdf)
+        if not fallback_candidate:
+            continue
+
+        row["result_pdf"] = fallback_candidate
         linked += 1
 
     return linked
 
 
-def build_score_data_from_parsed_rows(parsed_rows: list[dict[str, Any]]) -> tuple[dict[tuple[str, str], str], list[Any]]:
+def build_score_data_from_parsed_rows(
+    parsed_rows: list[dict[str, Any]],
+) -> tuple[dict[tuple[str, str], str], dict[tuple[str, str], str], list[Any]]:
     score_map: dict[tuple[str, str], str] = {}
+    rank_map: dict[tuple[str, str], str] = {}
     candidates: list[Any] = []
     dedupe_candidates: set[tuple[str, str, str]] = set()
 
@@ -206,6 +231,8 @@ def build_score_data_from_parsed_rows(parsed_rows: list[dict[str, Any]]) -> tupl
 
         swimmer_name = record.get("swimmer_name")
         club = record.get("club")
+        rank_raw = record.get("rank")
+        rank_text = str(rank_raw) if rank_raw is not None else None
 
         name_norm = startlist_parser.normalize_match_text(swimmer_name)
         club_norm = startlist_parser.normalize_match_text(club)
@@ -215,6 +242,8 @@ def build_score_data_from_parsed_rows(parsed_rows: list[dict[str, Any]]) -> tupl
         for key in startlist_parser.make_match_keys(swimmer_name, club):
             if key not in score_map:
                 score_map[key] = result_value
+            if rank_text is not None and key not in rank_map:
+                rank_map[key] = rank_text
 
         candidate_key = (name_norm, club_norm, result_value)
         if candidate_key in dedupe_candidates:
@@ -226,17 +255,19 @@ def build_score_data_from_parsed_rows(parsed_rows: list[dict[str, Any]]) -> tupl
                 name_norm=name_norm,
                 club_norm=club_norm,
                 result_value=result_value,
+                rank_value=rank_text,
             )
         )
 
-    return score_map, candidates
+    return score_map, rank_map, candidates
 
 
 def update_startlist_rows_for_result(
     startlist_rows: list[dict[str, Any]],
     result_pdf: Path,
-    score_data: tuple[dict[tuple[str, str], str], list[Any]],
+    score_data: tuple[dict[tuple[str, str], str], dict[tuple[str, str], str], list[Any]],
 ) -> tuple[int, int, int]:
+    fallback_used = 0
     result_pdf_text = str(result_pdf)
     target_rows = [row for row in startlist_rows if str(row.get("result_pdf") or "").strip() == result_pdf_text]
 
@@ -251,9 +282,17 @@ def update_startlist_rows_for_result(
                     target_rows.append(row)
 
     if not target_rows:
+        # Some meets use non-aligned StartList/ResultList numbering.
+        # In that case, try matching against unresolved rows globally.
+        target_rows = [row for row in startlist_rows if not str(row.get("result") or "").strip()]
+        fallback_used = 1
+
+    if not target_rows:
         return 0, 0, 0
 
     matched, fuzzy = startlist_parser.apply_scores_to_rows(target_rows, score_data)
+    if fallback_used:
+        return -len(target_rows), matched, fuzzy
     return len(target_rows), matched, fuzzy
 
 
@@ -594,11 +633,12 @@ def main() -> None:
                     result_pdf,
                     score_data,
                 )
-                if target_count > 0:
+                if target_count != 0:
                     startlist_dirty = True
+                    mode = "fallback" if target_count < 0 else "direct"
                     print(
                         f"Updated startlist rows for {result_pdf.name}: "
-                        f"target={target_count} matched={matched_count} fuzzy={fuzzy_count}"
+                        f"mode={mode} target={abs(target_count)} matched={matched_count} fuzzy={fuzzy_count}"
                     )
 
             parsed_result_pdfs.add(str(result_pdf))
